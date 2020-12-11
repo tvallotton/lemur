@@ -1,59 +1,85 @@
 
-mod stream;
 
-use stream::{
-    Stream,
-    ErrorHighlight,
-    Position,
-    Line,
-};
+
+
+
+
+use stream::Stream;
+use stream::Position;
+
+
+
+
+
 
 
 struct Lexer<'a> {
     stream: Stream<'a>,
-    check_point: Position, // marks where the token began
+    check_point: Position,
 }
 
-
-enum Keyword {
-    lambda_,
-    define_,
+impl Lexer<'a> {
 
 
-}
-
-enum Token {
-    keyword(Keyword),
-    float(String),
-    variable(String),
-    boolean(bool),
-    decimal(f64),
-    integer(i32),
-    symbol()
-
-}
+    fn next(&mut self) -> Option<Result<Token>> {
 
 
-//
-// impl<'a> Lexer<'a> {
-//
-//
-//     fn next(&self) -> Token {
-//
-//
-//
-//     }
-//
-//
-// }
+        let option = stream.next();
+
+        if option == None {
+            return None
+        }
+
+        if cs::DIGIT_INIT.contains(char) {
+            return self.read_digit()
+        }
 
 
-fn main() {
-    let string = "1341 23sda s3dasd".to_string();
+        else {
+            return Err("Disallowed character")
+        }
 
 
-    for substring in string.split(" ") {
-        println!("{:?}", substring);
+    }
+
+    fn read_digit(&mut self) {
+
+
+        result = self.read_integer();
+
+        match result {
+            Err(string) => self.read_float(string)
+            _ => result
+        }
+    }
+    fn read_integer(&mut self) {
+
+        let out = String;
+
+        loop {
+
+            let option = self.stream.next();
+
+            match option {
+
+                None => Ok(out),
+                Some('\n') => Ok(out),
+                Some(' ') => Ok(out),
+                Some(char) => {
+                    if cs::INT.contains(char) {
+                        out
+                    }
+                }
+            }
+        }
+
+    }
+
+    }
+    fn read_word(&mut self) {
+    }
+
+    fn read_word(&mut self) {
     }
 
 

@@ -31,10 +31,14 @@ pub const KEYWORDS: [&str;25] = [
     "at",
 ];
 
+asd sad asd
 
+
+
+
+pub const
 
 enum Token {
-
     Keyword(String),
     Variable(String),
     Integer(String),
@@ -42,6 +46,8 @@ enum Token {
     FString(String),
     Float(String),
     Bool(String),
-    Punctuation(String)
+    Punctuation(String), // . {} [] () : ;
+    Symbol(String),      // !"·$%&/=^*|"
+
 
 }
