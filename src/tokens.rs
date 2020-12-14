@@ -36,7 +36,7 @@ asd sad asd
 
 
 
-pub const
+
 
 enum Token {
     Keyword(String),
@@ -45,8 +45,11 @@ enum Token {
     String(String),
     FString(String),
     Float(String),
-    Bool(String),
-    Punctuation(String), // . {} [] () : ;
+    Complex(String), 
+    Bool(String), // True || False
+    Punctuation(String), // . , ;
+    Open(String), // { ( [
+    Close(String), // } ) ]
     Symbol(String),      // !"·$%&/=^*|"
 
 
