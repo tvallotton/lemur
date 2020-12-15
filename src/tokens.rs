@@ -1,5 +1,14 @@
 
-
+pub const RESERVED_SYMBOLS : [&str;8] = [
+    "->",
+    "=",
+    ":=",
+    "<-",
+    "=>",
+    ":",
+    "|",
+    ".."
+];
 
 pub const KEYWORDS: [&str;25] = [
     "let",
@@ -9,6 +18,7 @@ pub const KEYWORDS: [&str;25] = [
     "then",
     "else",
     "data",
+    "enum",
     "type",
     "import",
     "export",
@@ -20,24 +30,25 @@ pub const KEYWORDS: [&str;25] = [
     "try",
     "except",
     "finally",
-    "forall",
-    "async",
-    "await",
-    "module",
     "instance",
     "precedence",
     "alignment",
+    "module",
+    
+    // for possible future use
+    "forall",
+    "infix",
+    "async",
+    "await",
+    "in",
     "with",
     "at",
+    "macro"
 ];
 
-asd sad asd
 
 
-
-
-
-
+                    
 enum Token {
     Keyword(String),
     Variable(String),
@@ -50,7 +61,7 @@ enum Token {
     Punctuation(String), // . , ;
     Open(String), // { ( [
     Close(String), // } ) ]
-    Symbol(String),      // !"·$%&/=^*|"
+    Symbol(String),      // !"·$%&/=^*|:"
 
-
+    SyntaxError
 }

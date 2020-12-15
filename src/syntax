@@ -1,0 +1,45 @@
+
+
+() left right 
+
+fold | x y | case of 
+
+
+x < y < z does not compile
+
+infix operators:
+    and
+    or
+    in
+
+w
+
+
+
+
+if x == 10 && y != x then
+
+
+enum Bool where
+    True 
+    False
+
+
+
+enum [a] where
+    empty
+    cons {
+        head: a, 
+        tail: [a]
+    }
+
+
+
+
+trait Logic self where
+    and : self -> self -> self
+    or : self -> self -> self
+    not : self -> self
+
+
+if 3 < < 4
