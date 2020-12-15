@@ -43,6 +43,7 @@ pub const KEYWORDS: [&str;25] = [
     "in",
     "with",
     "at",
+    "syntax",
     "macro"
 ];
 

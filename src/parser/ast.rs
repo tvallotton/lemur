@@ -3,7 +3,7 @@
 
 struct Asignment {
     name: String, 
-    args: Vec[String],
+    args: Vec<String>,
     value: Expr
 }
 
