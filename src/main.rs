@@ -4,7 +4,6 @@
 mod parser;
 mod settings; 
 
-
 struct Myiterator {
     vector: Vec<i32>,
     index: i32,
@@ -25,27 +24,11 @@ impl Iterator for Myiterator {
 
 
 fn main() {
-    let mut array = Myiterator {
-        vector: vec![1, 2, 3, 4, 5, 6, 7, 8, 9],
-        index: 0,
-    };
-
-    for element in &mut array {
-        println!("{}", element);
-        if element == 6 {
-            break;// array.next();
-        }
-    }
-    println!("break");
-
-    println!("{:?}", array.next());
-    println!("still on break");
-    for element in &mut array {
-        println!("{}", element);
-    }
-
+   
+    
 
     
+    println!("{}", "sad".contains("x"));
 
     
 

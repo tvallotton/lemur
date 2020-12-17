@@ -49,6 +49,7 @@ pub const KEYWORDS: [&str; 34] = [
 
 pub enum Token {
     Keyword(String),
+    FuncMacro(String),
     Variable(String),
     Integer(String),
     String(String),

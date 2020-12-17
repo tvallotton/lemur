@@ -1,8 +1,8 @@
+use super::character_sets as cs;
+use super::errors::Position;
 use super::errors::SyntaxError;
-use crate::parser::character_sets as cs;
-use crate::parser::errors::Position;
-use crate::parser::stream::Stream;
-use crate::parser::tokens::Token;
+use super::stream::Stream;
+use super::tokens::Token;
 
 struct Lexer<'a> {
     string: &'a String,
@@ -29,90 +29,101 @@ impl<'a> Iterator for Lexer<'a> {
 
     fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.set_checkpoint();
-        let option = self.stream.peek();
+        let mut char = String::from(self.stream.peek());
 
-        if option == None {
-            return None;
+        if self.stream.eof() {
+            None
         }
-
-        let char = option.unwrap();
-        if cs::DIGIT_INIT.contains(char) {
-            self.read_digit()
-        } else if !cs::NOT_SYMBOL_INIT.contains(char) {
-            self.read_symbol()
-        } else if cs::SPECIAL_INIT.contains(char) {
-            // punctuation
-            self.read_digit()
-        } else if char == '"' {
-            self.read_string()
-        } else if char == '\'' {
-            self.read_char()
-        } else if char == ';' {
+        else if cs::WHITE_SPACE.contains(char) {
+            Some(self.skip_white_space());
+            self.next()
+        }
+        else if cs::DIGITS_INIT.contains(char) {
+            Some(self.read_digit(char))
+        } 
+        else if cs::ID_INIT.contains(char) {
+            Some(self.read_identifier(char))
+        }
+        else if cs::SPECIAL_TOKENS.contains(char) {
+            Some(self.read_sepcial_tokens(char))
+        }
+        else if char == '\n' {
+            Some(self.read_indent())
+        }
+        else if char == '"' {
+            Some(self.read_string())
+        }
+        else if char == '\'' {
+            Some(self.read_char())
+        }
+        else if char == ';' {
             self.skip_comment();
-        } else {
-            Some(Err("Disallowed character"))
+            self.next()
+        }
+        else {
+            Some(self.read_symbol(char))
         }
     }
 }
+// methods to define: 
+//     read_indent                      -> (indent)
+//     skip_white_space                 -> ()
+//     read_digit                       -> (int, float, complex)
+//     read_identifier { read_fstring } -> (macro, keyword, variable, fstring??)
+//     read_sepcial_tokens       
+//     read_string
+//     read_char
 
 impl<'a> Lexer<'a> {
-    // ready
-    fn read_integer(&mut self) -> String {
-        self.stream.walk_while("0123456789");
-    }
 
-    // ready (I think)
-    fn read_string(&mut self) -> Option<Result<Token, SyntaxError>> {
-        self.stream.next();
-        let out = String::new();
-
-        out.push_str(self.stream.walk_while("0123456789"));
-
-        if self.stream.peek() == '.' {
-            out.push_str(self.stream.walk_while("0123456789"));
-            if self.stream.peek() == 'i' {
-                self.stream.next();
-                return Some(Ok(Token::Integer(out)));
-            }
-        } else if self.stream.peek() == 'i' {
-            self.stream.next();
-            return Some(Ok(Token::Complex(out)));
-        } else {
-            return out;
-        }
-    }
-
-    // ready
-    fn read_digit(&mut self) -> Option<Result<Token, SyntaxError>> {
-        let string = self.read_integer();
-        let char = self.stream.peek();
-        if char == '.' {
-            string.push_str(self.read_integer());
-
-            if self.stream.peek() != 'i' {
-                return Some(Ok(Token::Float(string)));
-            } else {
-                self.stream.next();
-                return Some(Ok(Token::Complex(string)));
-            }
-        } else if char == 'i' {
-            self.stream.next();
-            return Some(Ok(Token::Complex(string)));
-        } else if cs::ID_INIT.contains(char) {
-            return Some(Err);
-        }
-    }
-
-    fn skip_comment(&mut self) -> Option<Result<Token, SyntaxError>> {
+    fn skip_white_space(&mut self) {
         for c in self.stream {
-            if c == '\n' {
+            if ! cs::WHITE_SPACE.contains(c) {
                 break;
             }
         }
-        if self.stream.next() == None {
-            None
-        } else {
-            self.next()
-        }
     }
+
+
+    fn read_indent(&mut self, out) -> Result<Token, SyntaxError> {
+        let count: i32 = 0;
+        for c in self.stream {
+            if c == ' ' {
+                count += 1;
+            }
+        }
+        return Ok(Token::Indentation(count));
+    }
+
+    fn read_digit(&mut self, out) -> Result<Token, SyntaxError> {
+
+        let number = self.stream.walk_while(cs::INTEGER);
+        
+        if self.stream.peek() == '.' {
+            number.push('.');
+            number.push_str(self.stream.walk_while(cs::INTEGER));
+            if self.stream.peek() == 'i' {
+                self.stream.next();
+                Ok(Token::Complex(number))
+            } 
+            else {
+                Ok(Token::Float(number))
+            }
+        }
+        else if self.stream.peek() == 'i' {
+            self.stream.next();
+            Ok(Token::Complex(number)
+        }
+        else {
+            Ok(Token::Integer(number))
+        }
+
+    }
+    fn read_indent(&mut self, out) -> Result<Token, SyntaxError> {}
+    fn read_indent(&mut self, out) -> Result<Token, SyntaxError> {}
+    fn read_indent(&mut self, out) -> Result<Token, SyntaxError> {}
+
+
+
 }
+
