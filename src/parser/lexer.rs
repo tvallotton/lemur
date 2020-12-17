@@ -1,8 +1,8 @@
 use super::errors::SyntaxError;
+use crate::parser::character_sets as cs;
 use crate::parser::stream::Position;
 use crate::parser::stream::Stream;
 use crate::parser::tokens::Token;
-use crate::parser::character_sets as cs;
 
 struct Lexer<'a> {
     string: &'a String,
@@ -32,8 +32,8 @@ impl<'a> Iterator for Lexer<'a> {
 
         if option == None {
             return None;
-        } 
-        
+        }
+
         let char = option.unwrap();
         if cs::DIGIT_INIT.contains(char) {
             self.read_digit()
@@ -120,7 +120,6 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    
     fn skip_comment(&mut self) -> Option<Result<Token, SyntaxError>> {
         for c in self.stream {
             if c == '\n' {
@@ -133,10 +132,4 @@ impl<'a> Lexer<'a> {
             self.next()
         }
     }
-
-
-    
-
-
 }
-

@@ -1,16 +1,15 @@
+pub const RESERVED_SYMBOLS: [&str; 8] = [
+    "->", 
+    "=", 
+    ":=", 
+    "<-", 
+    "=>", 
+    //asd
+    ":", 
+    "|", 
+    ".."];
 
-pub const RESERVED_SYMBOLS : [&str;8] = [
-    "->",
-    "=",
-    ":=",
-    "<-",
-    "=>",
-    ":",
-    "|",
-    ".."
-];
-
-pub const KEYWORDS: [&str;25] = [
+pub const KEYWORDS: [&str; 25] = [
     "let",
     "do",
     "where",
@@ -32,11 +31,9 @@ pub const KEYWORDS: [&str;25] = [
     "instance",
     "module",
     "using",
-    
     "infix",
     "precedence",
     "alignment",
-
     // for possible future use
     "end",
     "forall",
@@ -47,11 +44,9 @@ pub const KEYWORDS: [&str;25] = [
     "await",
     "in",
     "syntax",
-    "macro"
+    "macro",
 ];
 
-
- 
 pub enum Token {
     Keyword(String),
     Variable(String),
@@ -59,12 +54,10 @@ pub enum Token {
     String(String),
     FString(String),
     Float(String),
-    Complex(String), 
-    Bool(String), // True || False
+    Complex(String),
+    Bool(String),        // True || False
     Punctuation(String), // . , ;
-    Open(String), // { ( [
-    Close(String), // } ) ]
+    Open(String),        // { ( [
+    Close(String),       // } ) ]
     Symbol(String),      // !"·$%&/=^*|:"
 }
-
-

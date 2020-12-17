@@ -1,4 +1,4 @@
-const PREVIOUS_LINES : i32 = 1;
+const PREVIOUS_LINES: i32 = 1;
 const FOLLOWING_LINES: i32 = 1;
 // use crate::settings::{
 //     PREVIOUS_LINES,
@@ -94,7 +94,6 @@ impl SyntaxError {
         return out;
     }
 }
-
 
 // Tests
 fn main() {
