@@ -13,7 +13,8 @@ struct Lexer<'a> {
 impl<'a> Lexer<'a> {
     fn new(string: &'a String) -> Lexer<'a> {
         Lexer {
-            stream: Stream::from(&string),
+            string: string,
+            stream: Stream::from(string),
             checkpoint: Position::new(0, 0),
         }
     }
@@ -24,7 +25,7 @@ impl<'a> Lexer<'a> {
 }
 
 impl<'a> Iterator for Lexer<'a> {
-    type Item = Token;
+    type Item = Result<Token, SyntaxError>;
 
     fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.set_checkpoint();
@@ -44,8 +45,7 @@ impl<'a> Iterator for Lexer<'a> {
             self.read_digit()
         } else if char == '"' {
             self.read_string()
-        } else if cs::CHAR_INIT.contains(char) {
-            // 'a'
+        } else if char == '\'' {
             self.read_char()
         } else if char == ';' {
             self.skip_comment();
@@ -58,44 +58,27 @@ impl<'a> Iterator for Lexer<'a> {
 impl<'a> Lexer<'a> {
     // ready
     fn read_integer(&mut self) -> String {
-        let out = String::from(self.stream.peek());
-        loop {
-            let option = self.stream.next();
-
-            if option != None {
-                let char = option.unwrap();
-                if cs::INT.contains(char) {
-                    out.push(char);
-                    continue;
-                } else {
-                    return out;
-                }
-            } else {
-                return out;
-            }
-        }
+        self.stream.walk_while("0123456789");
     }
 
     // ready (I think)
     fn read_string(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.stream.next();
         let out = String::new();
-        loop {
-            let option = self.stream.next();
-            if option == None {
-                return None;
-            }
-            let char = option.unwrap();
 
-            if char == '\\' {
-                out.push(char);
-                continue;
-            }
-            if char == '"' {
+        out.push_str(self.stream.walk_while("0123456789"));
+
+        if self.stream.peek() == '.' {
+            out.push_str(self.stream.walk_while("0123456789"));
+            if self.stream.peek() == 'i' {
                 self.stream.next();
-                return Some(Ok(Token::String(out)));
+                return Some(Ok(Token::Integer(out)));
             }
-            out.push(char);
+        } else if self.stream.peek() == 'i' {
+            self.stream.next();
+            return Some(Ok(Token::Complex(out)));
+        } else {
+            return out;
         }
     }
 
