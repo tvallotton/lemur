@@ -1,6 +1,6 @@
 use super::errors::SyntaxError;
 use crate::parser::character_sets as cs;
-use crate::parser::stream::Position;
+use crate::parser::errors::Position;
 use crate::parser::stream::Stream;
 use crate::parser::tokens::Token;
 
@@ -13,7 +13,7 @@ struct Lexer<'a> {
 impl<'a> Lexer<'a> {
     fn new(string: &'a String) -> Lexer<'a> {
         Lexer {
-            stream: Stream::new(&string),
+            stream: Stream::from(&string),
             checkpoint: Position::new(0, 0),
         }
     }

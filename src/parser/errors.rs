@@ -1,9 +1,9 @@
-const PREVIOUS_LINES: i32 = 1;
-const FOLLOWING_LINES: i32 = 1;
-// use crate::settings::{
-//     PREVIOUS_LINES,
-//     FOLLOWING_LINES
-// };
+// const PREVIOUS_LINES: i32 = 1;
+// const FOLLOWING_LINES: i32 = 1;
+use crate::settings::{
+    PREVIOUS_LINES,
+    FOLLOWING_LINES
+};
 
 pub struct Line {
     pub number: i32,
@@ -17,7 +17,7 @@ pub struct Position {
 }
 
 impl Position {
-    fn new(row: i32, col: i32) -> Position {
+    pub fn new(row: i32, col: i32) -> Position {
         return Position { row, col };
     }
 }

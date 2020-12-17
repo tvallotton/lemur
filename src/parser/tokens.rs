@@ -9,7 +9,7 @@ pub const RESERVED_SYMBOLS: [&str; 8] = [
     "|", 
     ".."];
 
-pub const KEYWORDS: [&str; 25] = [
+pub const KEYWORDS: [&str; 34] = [
     "let",
     "do",
     "where",

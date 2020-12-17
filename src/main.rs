@@ -2,6 +2,9 @@
 #![allow(unused_imports)]
 
 mod parser;
+mod settings; 
+
+
 struct Myiterator {
     vector: Vec<i32>,
     index: i32,
