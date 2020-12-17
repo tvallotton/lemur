@@ -32,7 +32,7 @@ enum Expr {
         expression: Box<Expr>,
     },
 
-    Identifier(Id),
+    Identifier(Identifier),
 
     Literal {
         value: String,
@@ -55,6 +55,6 @@ enum Expr {
     },
     Caseof {
         value: Box<Expr>,
-        matches: Vec<Expr, Expr>,
+        matches: (Box<Expr>, Box<Expr>),
     },
 }

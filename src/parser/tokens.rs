@@ -38,7 +38,7 @@ pub const KEYWORDS: [&str;25] = [
     "alignment",
 
     // for possible future use
-    "end"
+    "end",
     "forall",
     "for",
     "while",
@@ -51,12 +51,8 @@ pub const KEYWORDS: [&str;25] = [
 ];
 
 
-
-
-
-f = | x y | x + y
-                    
-enum Token {
+ 
+pub enum Token {
     Keyword(String),
     Variable(String),
     Integer(String),

@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-// mod parser;
+mod parser;
 struct Myiterator {
     vector: Vec<i32>,
     index: i32,
@@ -30,7 +30,7 @@ fn main() {
     for element in &mut array {
         println!("{}", element);
         if element == 6 {
-            break;
+            break;// array.next();
         }
     }
     println!("break");
@@ -40,5 +40,10 @@ fn main() {
     for element in &mut array {
         println!("{}", element);
     }
+
+
+    
+
+    
 
 }

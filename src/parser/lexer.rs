@@ -1,11 +1,11 @@
-use crate::stream::Position;
-use crate::stream::Stream;
-use crate::tokens::Token;
-use crate::parser::errors::SyntaxError;
-use crate::character_sets as cs;
+use super::errors::SyntaxError;
+use crate::parser::stream::Position;
+use crate::parser::stream::Stream;
+use crate::parser::tokens::Token;
+use crate::parser::character_sets as cs;
 
 struct Lexer<'a> {
-    string: &String<'a>,
+    string: &'a String,
     stream: Stream<'a>,
     checkpoint: Position,
 }
@@ -23,7 +23,7 @@ impl<'a> Lexer<'a> {
     }
 }
 
-impl Iterator for Lexer<'a> {
+impl<'a> Iterator for Lexer<'a> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
@@ -32,14 +32,17 @@ impl Iterator for Lexer<'a> {
 
         if option == None {
             return None;
-        } else if cs::DIGIT_INIT.contains(char) {
+        } 
+        
+        let char = option.unwrap();
+        if cs::DIGIT_INIT.contains(char) {
             self.read_digit()
-        } else if cs::SYMBOL_INIT.contains(char) {
+        } else if !cs::NOT_SYMBOL_INIT.contains(char) {
             self.read_symbol()
         } else if cs::SPECIAL_INIT.contains(char) {
             // punctuation
             self.read_digit()
-        } else if cs::STRING_INIT.contains(char) {
+        } else if char == '"' {
             self.read_string()
         } else if cs::CHAR_INIT.contains(char) {
             // 'a'
@@ -117,11 +120,23 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn skip_comment(&mut self) -> Option<Result<Token, SyntaxError>>{
-
-        l
     
+    fn skip_comment(&mut self) -> Option<Result<Token, SyntaxError>> {
+        for c in self.stream {
+            if c == '\n' {
+                break;
+            }
+        }
+        if self.stream.next() == None {
+            None
+        } else {
+            self.next()
+        }
     }
 
 
+    
+
+
 }
+
