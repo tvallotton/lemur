@@ -1,4 +1,16 @@
-use crate::errors::Position;
+// use crate::errors::Position;
+
+#[derive(Clone, Copy)]
+pub struct Position {
+    pub row: i32,
+    pub col: i32,
+}
+
+impl Position {
+    fn new(row: i32, col: i32) -> Position {
+        return Position { row, col };
+    }
+}
 
 pub struct Stream<'a> {
     iterator: std::str::Chars<'a>,
@@ -73,35 +85,23 @@ impl<'a> Stream<'a> {
     }
     pub fn walk_while(&mut self, char_set: &String) -> String {
         let mut out = String::from(self.char);
-        loop {
-            let option = self.next();
-            if option == None {
+        for c in self {
+            if ! char_set.contains(c) {
                 break;
             }
-            let char = option.unwrap();
-
-            if !char_set.contains(char) {
-                break;
-            }
-            out.push(char);
+            out.push(c);
         }
-        return out;
+        out
     }
 
     pub fn walk_while_not(&mut self, char_set: &String) -> String {
         let mut out = String::from(self.char);
-        loop {
-            let option = self.next();
-            if option == None {
+        for c in self {
+            if char_set.contains(c) {
                 break;
             }
-            let char = option.unwrap();
-
-            if char_set.contains(char) {
-                break;
-            }
-            out.push(char);
+            out.push(c);
         }
-        return out;
+        out
     }
 }

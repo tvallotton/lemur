@@ -44,8 +44,8 @@ impl Iterator for Lexer<'a> {
         } else if cs::CHAR_INIT.contains(char) {
             // 'a'
             self.read_char()
-        } else if cs::C.contains(char) {
-            self.read_digit()
+        } else if char == ';' {
+            self.skip_comment();
         } else {
             Some(Err("Disallowed character"))
         }
@@ -74,7 +74,7 @@ impl<'a> Lexer<'a> {
     }
 
     // ready (I think)
-    fn read_string(&mut self) -> Option<Result<Token>> {
+    fn read_string(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.stream.next();
         let out = String::new();
         loop {
@@ -97,7 +97,7 @@ impl<'a> Lexer<'a> {
     }
 
     // ready
-    fn read_digit(&mut self) -> Option<Result<Token>> {
+    fn read_digit(&mut self) -> Option<Result<Token, SyntaxError>> {
         let string = self.read_integer();
         let char = self.stream.peek();
         if char == '.' {
@@ -116,4 +116,12 @@ impl<'a> Lexer<'a> {
             return Some(Err);
         }
     }
+
+    fn skip_comment(&mut self) -> Option<Result<Token, SyntaxError>>{
+
+        l
+    
+    }
+
+
 }

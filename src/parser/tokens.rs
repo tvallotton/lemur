@@ -23,7 +23,6 @@ pub const KEYWORDS: [&str;25] = [
     "import",
     "export",
     "as",
-    "from",
     "when",
     "case",
     "of",
@@ -31,24 +30,31 @@ pub const KEYWORDS: [&str;25] = [
     "except",
     "finally",
     "instance",
+    "module",
+    "using",
+    
+    "infix",
     "precedence",
     "alignment",
-    "module",
-    
+
     // for possible future use
+    "end"
     "forall",
-    "infix",
+    "for",
+    "while",
+    "mut",
     "async",
     "await",
     "in",
-    "with",
-    "at",
     "syntax",
     "macro"
 ];
 
 
 
+
+
+f = | x y | x + y
                     
 enum Token {
     Keyword(String),
@@ -64,3 +70,5 @@ enum Token {
     Close(String), // } ) ]
     Symbol(String),      // !"·$%&/=^*|:"
 }
+
+

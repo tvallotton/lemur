@@ -12,12 +12,16 @@ infix operators:
     or
     in
 
-w
+
+
 
 
 
 
 if x == 10 && y != x then
+if x == 10 and y == x then
+
+
 
 
 enum Bool where
@@ -43,3 +47,30 @@ trait Logic self where
 
 
 if 3 < < 4
+
+
+
+| x y z | => ( )
+
+
+
+instance Monad List where 
+
+
+
+end
+
+
+
+
+
+precedence: 
+
+    ($)
+    function call
+    lambdas 
+
+
+    custom operators
+
+    
