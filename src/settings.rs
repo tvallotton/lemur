@@ -6,3 +6,5 @@ fn main() {
     let a: i32 = 2;
     println!("{}", a.pow(3));
 }
+
+

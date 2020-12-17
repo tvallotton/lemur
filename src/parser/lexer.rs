@@ -1,9 +1,11 @@
 use crate::stream::Position;
 use crate::stream::Stream;
 use crate::tokens::Token;
+use crate::parser::errors::SyntaxError;
 use crate::character_sets as cs;
 
 struct Lexer<'a> {
+    string: &String<'a>,
     stream: Stream<'a>,
     checkpoint: Position,
 }
@@ -23,7 +25,8 @@ impl<'a> Lexer<'a> {
 
 impl Iterator for Lexer<'a> {
     type Item = Token;
-    fn next(&mut self) -> Option<Token> {
+
+    fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.set_checkpoint();
         let option = self.stream.peek();
 
@@ -71,7 +74,7 @@ impl<'a> Lexer<'a> {
     }
 
     // ready (I think)
-    fn read_string(&mut self) -> Option<Token> {
+    fn read_string(&mut self) -> Option<Result<Token>> {
         self.stream.next();
         let out = String::new();
         loop {
@@ -80,36 +83,37 @@ impl<'a> Lexer<'a> {
                 return None;
             }
             let char = option.unwrap();
+
             if char == '\\' {
                 out.push(char);
                 continue;
             }
             if char == '"' {
                 self.stream.next();
-                return Some(Token::String(out));
+                return Some(Ok(Token::String(out)));
             }
             out.push(char);
         }
     }
 
     // ready
-    fn read_digit(&mut self) -> Option<Token> {
+    fn read_digit(&mut self) -> Option<Result<Token>> {
         let string = self.read_integer();
         let char = self.stream.peek();
         if char == '.' {
             string.push_str(self.read_integer());
 
             if self.stream.peek() != 'i' {
-                return Some(Token::Float(string));
+                return Some(Ok(Token::Float(string)));
             } else {
                 self.stream.next();
-                return Some(Token::Complex(string));
+                return Some(Ok(Token::Complex(string)));
             }
         } else if char == 'i' {
             self.stream.next();
-            return Some(Token::Complex(string));
+            return Some(Ok(Token::Complex(string)));
         } else if cs::ID_INIT.contains(char) {
-            return Some(Token::SyntaxError);
+            return Some(Err);
         }
     }
 }

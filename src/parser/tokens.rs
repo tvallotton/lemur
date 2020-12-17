@@ -63,6 +63,4 @@ enum Token {
     Open(String), // { ( [
     Close(String), // } ) ]
     Symbol(String),      // !"·$%&/=^*|:"
-
-    SyntaxError
 }
