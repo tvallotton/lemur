@@ -2,34 +2,32 @@
 #![allow(unused_imports)]
 
 mod parser;
-mod settings; 
-
-struct Myiterator {
-    vector: Vec<i32>,
-    index: i32,
-}
-
-impl Iterator for Myiterator {
-    type Item = i32;
-    fn next(&mut self) -> Option<i32> {
-        self.index += 1;
-        if self.vector.len() <= self.index as usize {
-            None
-        }
-        else {
-            Some(self.vector[self.index as usize])
-        }
-    }
-}
-
+mod settings;
 
 fn main() {
-   
-    
+    // let result = parser::Parser::from(&string);
 
-    
-    println!("{}", "sad".contains("x"));
+    // if result.is_err() {
+    //     let error = res.unwrap_err();
+    //     error.display();
+    //     return ();
+    // }
 
-    
+    // let ast = result.unwrap();
 
+    // let checker = type_checker::Checker::from(ast);
+
+    // let result = checker.check();
+
+    // if result.is_err() {
+    //     let error = res.unwrap_err();
+    //     error.display();
+    //     return ();
+    // }
+
+    // let comp = compiler::Compiler::from(ast);
+
+    // let code = comp.compile();
+
+    // println!("{}", code);
 }
