@@ -71,7 +71,7 @@ impl<'a> Stream<'a> {
     pub fn peek(&self) -> char {
         self.char
     }
-    pub fn walk_while(&mut self, char_set: &String) -> String {
+    pub fn walk_while(&mut self, char_set: &str) -> String {
         let mut out = String::from(self.char);
         for c in self {
             if !char_set.contains(c) {
@@ -82,7 +82,7 @@ impl<'a> Stream<'a> {
         out
     }
 
-    pub fn walk_while_not(&mut self, char_set: &String) -> String {
+    pub fn walk_while_not(&mut self, char_set: &str) -> String {
         let mut out = String::from(self.char);
         for c in self {
             if char_set.contains(c) {

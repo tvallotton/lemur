@@ -1,13 +1,7 @@
 pub const RESERVED_SYMBOLS: [&str; 8] = [
-    "->", 
-    "=", 
-    ":=", 
-    "<-", 
-    "=>", 
-    //asd
-    ":", 
-    "|", 
-    ".."];
+    "->", "=", ":=", "<-", "=>", //asd
+    ":", "|", "..",
+];
 
 pub const KEYWORDS: [&str; 34] = [
     "let",
@@ -56,9 +50,18 @@ pub enum Token {
     FString(String),
     Float(String),
     Complex(String),
-    Bool(String),        // True || False
-    Punctuation(String), // . , ;
-    Open(String),        // { ( [
-    Close(String),       // } ) ]
-    Symbol(String),      // !"·$%&/=^*|:"
+    Bool(String),   // True || False
+    Symbol(String), // !"·$%&/=^*|:"
+
+    // special tokens
+    Comma,
+    Hash,
+    VerticalLine,
+    OCurly,
+    OSquare,
+    CSquare,
+    OParens,
+    CParens,
+    Colon,
+    Period,
 }

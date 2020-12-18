@@ -92,7 +92,7 @@ impl<'a> Lexer<'a> {
     // ready to test
     // missing possible floats like 3.4345e345
     fn read_digit(&mut self, mut number: String) -> Result<Token, SyntaxError> {
-        number.push_str(self.stream.walk_while(cs::INTEGER));
+        number.push_str(&self.stream.walk_while(cs::INTEGER));
         let char = self.stream.peek();
         if char == '.' || char == 'e' {
             self.read_float(number)
