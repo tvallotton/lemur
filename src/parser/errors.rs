@@ -4,7 +4,7 @@ use crate::settings::{
     PREVIOUS_LINES,
     FOLLOWING_LINES
 };
-
+#[derive(Debug)]
 pub struct Line {
     pub number: i32,
     pub content: String,
@@ -21,7 +21,7 @@ impl Position {
         return Position { row, col };
     }
 }
-
+#[derive(Debug)]
 pub struct SyntaxError {
     pub line: Line,
     pub message: String,

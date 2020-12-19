@@ -41,7 +41,7 @@ pub const KEYWORDS: [&str; 34] = [
     "macro",
 ];
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
     Keyword(String),
     FuncMacro(String),
@@ -49,6 +49,7 @@ pub enum Token {
     Integer(String),
     String(String),
     FString(String),
+    Char(String),
     Float(String),
     Complex(String),
     Bool(String),   // True || False
@@ -67,3 +68,4 @@ pub enum Token {
     Colon,
     Period,
 }
+

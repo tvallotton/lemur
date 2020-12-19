@@ -2,18 +2,19 @@
 // #![warn(unused_imports)]
 
 // Initializers
-pub const DIGIT_INIT: &str = "123456789";
-pub const WHITE_SPACE: &str = " ";
-pub const ID_INIT: &str = "asdfghjklqwertyuiopzxcvbnmASDFGHJKLQWERTYUIOPZXCVBNM";
-pub const SPECIAL_INIT: &str = ",.(){}[]|#";
-pub const CHAR_INIT: &str = "'";
+pub const DIGIT_INIT     : &str = "123456789";
+pub const FLOAT          : &str = "0123456789.";
+pub const WHITE_SPACE    : &str = " ";
+pub const ID_INIT        : &str = "asdfghjklqwertyuiopzxcvbnmASDFGHJKLQWERTYUIOPZXCVBNM";
+pub const SPECIAL_INIT   : &str = ",.:(){}[]|#";
+pub const CHAR_INIT      : &str = "'";
 pub const NOT_SYMBOL_INIT: &str = " \n\t\r_qwertyuiopasd  
                                    fghjklzxcvbnmQWERTYUIOASD 
                                    FGHJKLZXCVBNM!1234567890. 
                                    ;,{}[]()”“\\\"";
 
 // body
-pub const SPECIAL_TOKENS: &str = ",.(){}[]:;|#";
+pub const SPECIAL_TOKENS: &str = SPECIAL_INIT;
 pub const INTEGER: &str = "1234567890";
 pub const NOT_SYMBOLS: &str = NOT_SYMBOL_INIT;
 pub const ID_INITIALIZER: &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";

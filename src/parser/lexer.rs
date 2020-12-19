@@ -47,9 +47,9 @@ impl<'a> Iterator for Lexer<'a> {
             Some(self.skip_white_space());
             self.next()
         } else if cs::DIGIT_INIT.contains(&char) {
-            Some(self.read_digit(char))
+            Some(self.read_digit())
         } else if cs::ID_INIT.contains(&char) {
-            Some(self.read_identifier(char))
+            Some(self.read_identifier())
         } else if cs::SPECIAL_TOKENS.contains(&char) {
             Some(self.read_sepcial_tokens())
         } else if char == "\n" {
@@ -68,7 +68,6 @@ impl<'a> Iterator for Lexer<'a> {
         }
     }
 }
-
 
 impl<'a> Lexer<'a> {
     // ready to test
@@ -92,11 +91,11 @@ impl<'a> Lexer<'a> {
         return Ok(Token::Indentation(count));
     }
     // ready to test
-    // missing possible floats like 3.4345e345
-    fn read_digit(&mut self, mut number: String) -> Result<Token, SyntaxError> {
+    fn read_digit(&mut self) -> Result<Token, SyntaxError> {
+        let mut number = String::new();
         number.push_str(&self.stream.walk_while(cs::INTEGER));
         let char = self.stream.peek();
-        if char == '.' || char == 'e' {
+        if char == '.' || char == 'e' || char == 'E' {
             self.read_float(number)
         } else if self.stream.peek() == 'i' {
             self.stream.next();
@@ -109,21 +108,20 @@ impl<'a> Lexer<'a> {
     fn read_float(&mut self, mut number: String) -> Result<Token, SyntaxError> {
         if self.stream.peek() == '.' {
             number.push('.');
-            number.push_str(&self.stream.walk_while(cs::INTEGER));
-            if self.stream.peek() == 'i' {
-                self.stream.next();
-                Ok(Token::Complex(number))
-            } else {
-                Ok(Token::Float(number))
+            for c in &mut self.stream {
+                if cs::FLOAT.contains(c) {
+                    number.push(c);
+                } else {
+                    break;
+                }
             }
         }
-        else {
+        let peek = self.stream.peek();
+        if peek == 'e' || peek == 'E' {
             number.push('e');
             match self.stream.next() {
                 Some(c) => {
                     if c == '+' || c == '-' || cs::INTEGER.contains(c) {
-                        number.push(c);
-
                         let pow = self.stream.walk_while(cs::INTEGER);
                         if pow.len() == 0 {
                             let message = String::from(
@@ -142,10 +140,18 @@ impl<'a> Lexer<'a> {
                 }
                 _ => Err(self.syntax_error("Unexpected end of file while parsing float literal.")),
             }
+        } else {
+            if self.stream.peek() == 'i' {
+                self.stream.next();
+                Ok(Token::Complex(number))
+            } else {
+                Ok(Token::Float(number))
+            }
         }
     }
 
-    fn read_identifier(&mut self, mut out: String) -> Result<Token, SyntaxError> {
+    fn read_identifier(&mut self) -> Result<Token, SyntaxError> {
+        let mut out = String::new();
         out.push_str(&self.stream.walk_while(&cs::ID));
 
         if tokens::KEYWORDS.contains(&&*out) {
@@ -228,39 +234,57 @@ impl<'a> Lexer<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::parser::errors::SyntaxError;
     use crate::parser::tokens::Token;
-    use super::*;
+
+    // things to test
+    // 1) new
+    // 2) ints
+    // 3) floats
+    // 4) strings
+    // 5) chars
+    // 6) an entire program
+    // 7) keywords
+    // 8) variables
 
     #[test]
     fn instatiating_lexer() {
-        let string = String::from("asdjn dasndj asnd 32 32e3 ndk 2");
+        let string = String::from("variable 234 3.34e-34 345.34i 34i\n   ,.|{}[]#():; comentario asd asd\nfin_comentario! 'a' \"a quote: \\\"\" ");
         let mut lexer = Lexer::new(&string);
+        let output = vec![
+            Token::Indentation(0),
+            Token::Variable("variable".to_string()),
+            Token::Integer("234".to_string()),
+            Token::Float("3.34e-34".to_string()),
+            Token::Complex("345.34".to_string()),
+            Token::Complex("34".to_string()),
+            Token::Indentation(3),
+            Token::Comma,
+            Token::Period,
+            Token::VerticalLine,
+            Token::OCurly,
+            Token::CCurly,
+            Token::OSquare,
+            Token::CSquare,
+            Token::Hash,
+            Token::OParens,
+            Token::CParens,
+            Token::Colon,
+            Token::Indentation(0),
+            Token::FuncMacro("fin_comentario".to_string()),
+            Token::Char("a".to_string()),
+            Token::String("a quote: \\\"".to_string()),
+        ];
+        for (item, expected) in lexer.zip(output) {
+            let value = item.unwrap_or_else(|_| panic!());
+            if expected != value {
+                println!("ERROR: expected {:?} != got {:?}", expected, value);
+            } else {
+                println!("OK: expected {:?} == got {:?}", expected, value);
+            }
+        }
     }
-    #[test]
-    fn integer_token0() {
-        let string = String::from("123 ");
-        let mut lexer = Lexer::new(&string);
-        lexer.next().unwrap();
-    }
-    #[test]
-    fn integer_token1() {
-        let string = String::from("123");
-        let mut lexer = Lexer::new(&string);
-        match lexer.next().unwrap() {
-            Ok(Token::Integer(string)) => (),
-            value => panic!(format!("{:?}", value))
-        };
-    }
-    #[test]
-    fn float_token0() {
-        let string = String::from("123.24");
-        let mut lexer = Lexer::new(&string);
-        lexer.next().unwrap();
-    }
-
-
 }
