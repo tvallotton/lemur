@@ -23,6 +23,15 @@ impl<'a> Lexer<'a> {
     fn set_checkpoint(&mut self) {
         self.checkpoint = self.stream.pos();
     }
+
+    fn syntax_error(&self, message: &str) -> SyntaxError {
+        let pos = self.stream.pos();
+        let col0 = self.checkpoint.col;
+        let col1 = pos.col;
+        let mut error = SyntaxError::new(self.string, pos.row, (col0, col1));
+        error.message = message.to_string();
+        error
+    }
 }
 
 impl<'a> Iterator for Lexer<'a> {
@@ -30,7 +39,7 @@ impl<'a> Iterator for Lexer<'a> {
 
     fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.set_checkpoint();
-        let mut char = String::from(self.stream.peek());
+        let char = String::from(self.stream.peek());
 
         if self.stream.eof() {
             None
@@ -42,7 +51,7 @@ impl<'a> Iterator for Lexer<'a> {
         } else if cs::ID_INIT.contains(&char) {
             Some(self.read_identifier(char))
         } else if cs::SPECIAL_TOKENS.contains(&char) {
-            Some(self.read_sepcial_tokens(char))
+            Some(self.read_sepcial_tokens())
         } else if char == "\n" {
             Some(self.read_indent())
         } else if char == "\"" {
@@ -53,25 +62,18 @@ impl<'a> Iterator for Lexer<'a> {
             self.skip_comment();
             self.next()
         } else if char == "\t" {
-            Some(self.syntax_error("Tabs are not supported."))
+            Some(Err(self.syntax_error("Tabs are not supported.")))
         } else {
             Some(self.read_symbol(char))
         }
     }
 }
-// methods to define:
-//     read_indent                      -> (indent)
-//     skip_white_space                 -> ()
-//     read_digit                       -> (int, float, complex)
-//     read_identifier { read_fstring } -> (macro, keyword, variable, fstring??)
-//     read_sepcial_tokens
-//     read_string
-//     read_char
+
 
 impl<'a> Lexer<'a> {
     // ready to test
     fn skip_white_space(&mut self) {
-        for c in self.stream {
+        for c in &mut self.stream {
             if !cs::WHITE_SPACE.contains(c) {
                 break;
             }
@@ -80,8 +82,8 @@ impl<'a> Lexer<'a> {
 
     // ready to test
     fn read_indent(&mut self) -> Result<Token, SyntaxError> {
-        let count: i32 = 0;
-        for c in self.stream {
+        let mut count: i32 = 0;
+        for c in &mut self.stream {
             if c != ' ' {
                 break;
             }
@@ -107,7 +109,7 @@ impl<'a> Lexer<'a> {
     fn read_float(&mut self, mut number: String) -> Result<Token, SyntaxError> {
         if self.stream.peek() == '.' {
             number.push('.');
-            number.push_str(self.stream.walk_while(cs::INTEGER));
+            number.push_str(&self.stream.walk_while(cs::INTEGER));
             if self.stream.peek() == 'i' {
                 self.stream.next();
                 Ok(Token::Complex(number))
@@ -115,8 +117,8 @@ impl<'a> Lexer<'a> {
                 Ok(Token::Float(number))
             }
         }
-        if self.stream.peek() == 'e' {
-            self.push('e');
+        else {
+            number.push('e');
             match self.stream.next() {
                 Some(c) => {
                     if c == '+' || c == '-' || cs::INTEGER.contains(c) {
@@ -127,57 +129,57 @@ impl<'a> Lexer<'a> {
                             let message = String::from(
                                 "Invalid float literal. An order of magnitud was expected.",
                             );
-                            self.syntax_error(message)
+                            Err(self.syntax_error(&message))
                         } else {
-                            number.push_str(pow);
+                            number.push_str(&pow);
                             Ok(Token::Float(number))
                         }
                     } else {
                         let message =
                             format!("Unexpected character '{}' while reading float literal", c);
-                        self.syntax_error(message)
+                        Err(self.syntax_error(&message))
                     }
                 }
-                None => self.syntax_error("Unexpected end of file while parsing float literal."),
+                _ => Err(self.syntax_error("Unexpected end of file while parsing float literal.")),
             }
         }
     }
 
     fn read_identifier(&mut self, mut out: String) -> Result<Token, SyntaxError> {
-        out.push_str(self.stream.walk_while(cs::ID));
+        out.push_str(&self.stream.walk_while(&cs::ID));
 
-        if tokens::KEYWORDS.contains(out) {
+        if tokens::KEYWORDS.contains(&&*out) {
             Ok(Token::Keyword(out))
         } else if self.stream.peek() == '!' {
             self.stream.next();
-            Ok(Token::Macro(out))
+            Ok(Token::FuncMacro(out))
         } else {
             Ok(Token::Variable(out))
         }
     }
 
-    fn read_sepcial_tokens(&mut self, mut out: String) -> Result<Token, SyntaxError> {
+    fn read_sepcial_tokens(&mut self) -> Result<Token, SyntaxError> {
         let char = self.stream.peek();
         self.stream.next();
         match char {
             ',' => Ok(Token::Comma),
             '#' => Ok(Token::Hash),
-            '|' => Ok(Token::VerticanLine),
+            '|' => Ok(Token::VerticalLine),
             '{' => Ok(Token::OCurly),
             '}' => Ok(Token::CCurly),
             '[' => Ok(Token::OSquare),
             ']' => Ok(Token::CSquare),
             '(' => Ok(Token::OParens),
-            '(' => Ok(Token::CParens),
+            ')' => Ok(Token::CParens),
             ':' => Ok(Token::Colon),
             '.' => Ok(Token::Period),
             _ => panic!(),
         }
     }
     fn read_string(&mut self) -> Result<Token, SyntaxError> {
-        let out = String::new();
-        let except = false;
-        for c in self.stream {
+        let mut out = String::new();
+        let mut except = false;
+        for c in &mut self.stream {
             if c == '"' && !except {
                 return Ok(Token::String(out));
             } else if c == '\\' {
@@ -191,9 +193,9 @@ impl<'a> Lexer<'a> {
     }
 
     fn read_char(&mut self) -> Result<Token, SyntaxError> {
-        let out = String::new();
-        let except = false;
-        for c in self.stream {
+        let mut out = String::new();
+        let mut except = false;
+        for c in &mut self.stream {
             if c == '\'' && !except {
                 return Ok(Token::String(out));
             } else if c == '\\' {
@@ -207,19 +209,19 @@ impl<'a> Lexer<'a> {
     }
 
     fn skip_comment(&mut self) {
-        for c in self.stream {
+        for c in &mut self.stream {
             if c == '\n' {
                 break;
             }
         }
     }
 
-    fn read_symbol(&mut self, out: String) -> Result<Token, SyntaxError> {
-        for c in self.stream {
+    fn read_symbol(&mut self, mut out: String) -> Result<Token, SyntaxError> {
+        for c in &mut self.stream {
             if !cs::NOT_SYMBOLS.contains(c) {
                 out.push(c);
             } else {
-               break;
+                break;
             }
         }
         Ok(Token::Symbol(out))

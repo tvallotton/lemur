@@ -58,6 +58,7 @@ pub enum Token {
     Hash,
     VerticalLine,
     OCurly,
+    CCurly,
     OSquare,
     CSquare,
     OParens,
