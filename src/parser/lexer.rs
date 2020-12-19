@@ -179,15 +179,17 @@ impl<'a> Lexer<'a> {
             ')' => Ok(Token::CParens),
             ':' => Ok(Token::Colon),
             '.' => Ok(Token::Period),
-            _ => panic!(),
+            _ => panic!("This should never happen."),
         }
     }
     fn read_string(&mut self) -> Result<Token, SyntaxError> {
         let mut out = String::new();
         let mut except = false;
+        let mut eof = true;
         for c in &mut self.stream {
             if c == '"' && !except {
-                return Ok(Token::String(out));
+                eof = false;
+                break;
             } else if c == '\\' {
                 except = true;
             } else {
@@ -195,15 +197,22 @@ impl<'a> Lexer<'a> {
                 out.push(c);
             }
         }
-        Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+        self.stream.next();
+        if eof {
+            Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+        } else {
+            Ok(Token::String(out))
+        }
     }
 
     fn read_char(&mut self) -> Result<Token, SyntaxError> {
         let mut out = String::new();
         let mut except = false;
+        let mut eof = true;
         for c in &mut self.stream {
             if c == '\'' && !except {
-                return Ok(Token::String(out));
+                eof = false;
+                break;
             } else if c == '\\' {
                 except = true;
             } else {
@@ -211,7 +220,12 @@ impl<'a> Lexer<'a> {
                 out.push(c);
             }
         }
-        Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+        self.stream.next();
+        if eof {
+            Err(self.syntax_error("Unexpected end of file while parsing character literal."))
+        } else {
+            Ok(Token::Char(out))
+        }
     }
 
     fn skip_comment(&mut self) {
@@ -249,19 +263,20 @@ mod tests {
     // 6) an entire program
     // 7) keywords
     // 8) variables
-
     #[test]
     fn instatiating_lexer() {
-        let string = String::from("variable 234 3.34e-34 345.34i 34i\n   ,.|{}[]#():; comentario asd asd\nfin_comentario! 'a' \"a quote: \\\"\" ");
+        let string = String::from("variable  \"the string\" 234 3.34e-34 345.34i 34i\n   \'a\',.|{}[]#():; comentario asd asd\nfin_comentario!  ");
         let mut lexer = Lexer::new(&string);
         let output = vec![
             Token::Indentation(0),
             Token::Variable("variable".to_string()),
+            Token::String("the string".to_string()),
             Token::Integer("234".to_string()),
             Token::Float("3.34e-34".to_string()),
             Token::Complex("345.34".to_string()),
             Token::Complex("34".to_string()),
             Token::Indentation(3),
+            Token::Char("a".to_string()),
             Token::Comma,
             Token::Period,
             Token::VerticalLine,
@@ -275,15 +290,19 @@ mod tests {
             Token::Colon,
             Token::Indentation(0),
             Token::FuncMacro("fin_comentario".to_string()),
-            Token::Char("a".to_string()),
-            Token::String("a quote: \\\"".to_string()),
         ];
         for (item, expected) in lexer.zip(output) {
-            let value = item.unwrap_or_else(|_| panic!());
-            if expected != value {
-                println!("ERROR: expected {:?} != got {:?}", expected, value);
-            } else {
-                println!("OK: expected {:?} == got {:?}", expected, value);
+            match item {
+                Err(error) => {
+                    println!("Error: {:?}", error);
+                }
+                Ok(value) => {
+                    if expected != value {
+                        println!("ERROR: expected {:?} != got {:?}", expected, value);
+                    } else {
+                        println!("OK: expected {:?} == got {:?}", expected, value);
+                    }
+                }
             }
         }
     }
