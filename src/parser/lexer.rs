@@ -104,7 +104,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn read_float(&mut self, mut number: String) {
+    fn read_float(&mut self, mut number: String) -> Result<Token, SyntaxError> {
         if self.stream.peek() == '.' {
             number.push('.');
             number.push_str(self.stream.walk_while(cs::INTEGER));
@@ -171,8 +171,57 @@ impl<'a> Lexer<'a> {
             '(' => Ok(Token::CParens),
             ':' => Ok(Token::Colon),
             '.' => Ok(Token::Period),
-            _ => panic!(),  
+            _ => panic!(),
         }
     }
-    fn read_string(&mut self, out: ) -> Result<Token, SyntaxError> {}
+    fn read_string(&mut self) -> Result<Token, SyntaxError> {
+        let out = String::new();
+        let except = false;
+        for c in self.stream {
+            if c == '"' && !except {
+                return Ok(Token::String(out));
+            } else if c == '\\' {
+                except = true;
+            } else {
+                except = false;
+                out.push(c);
+            }
+        }
+        Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+    }
+
+    fn read_char(&mut self) -> Result<Token, SyntaxError> {
+        let out = String::new();
+        let except = false;
+        for c in self.stream {
+            if c == '\'' && !except {
+                return Ok(Token::String(out));
+            } else if c == '\\' {
+                except = true;
+            } else {
+                except = false;
+                out.push(c);
+            }
+        }
+        Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+    }
+
+    fn skip_comment(&mut self) {
+        for c in self.stream {
+            if c == '\n' {
+                break;
+            }
+        }
+    }
+
+    fn read_symbol(&mut self, out: String) -> Result<Token, SyntaxError> {
+        for c in self.stream {
+            if !cs::NOT_SYMBOLS.contains(c) {
+                out.push(c);
+            } else {
+               break;
+            }
+        }
+        Ok(Token::Symbol(out))
+    }
 }
