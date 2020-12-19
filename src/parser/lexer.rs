@@ -156,6 +156,23 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    // fn read_sepcial_tokens(&mut self, out) -> Result<Token, SyntaxError> {}
-    // fn read_indent(&mut self, out) -> Result<Token, SyntaxError> {}
+    fn read_sepcial_tokens(&mut self, mut out: String) -> Result<Token, SyntaxError> {
+        let char = self.stream.peek();
+        self.stream.next();
+        match char {
+            ',' => Ok(Token::Comma),
+            '#' => Ok(Token::Hash),
+            '|' => Ok(Token::VerticanLine),
+            '{' => Ok(Token::OCurly),
+            '}' => Ok(Token::CCurly),
+            '[' => Ok(Token::OSquare),
+            ']' => Ok(Token::CSquare),
+            '(' => Ok(Token::OParens),
+            '(' => Ok(Token::CParens),
+            ':' => Ok(Token::Colon),
+            '.' => Ok(Token::Period),
+            _ => panic!(),  
+        }
+    }
+    fn read_string(&mut self, out: ) -> Result<Token, SyntaxError> {}
 }

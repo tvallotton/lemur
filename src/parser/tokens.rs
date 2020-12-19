@@ -51,8 +51,8 @@ pub enum Token {
     Float(String),
     Complex(String),
     Bool(String),   // True || False
-    Symbol(String), // !"·$%&/=^*|:"
-
+    Symbol(String), // 
+    Indentation(i32),
     // special tokens
     Comma,
     Hash,
