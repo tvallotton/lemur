@@ -227,3 +227,40 @@ impl<'a> Lexer<'a> {
         Ok(Token::Symbol(out))
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::parser::errors::SyntaxError;
+    use crate::parser::tokens::Token;
+    use super::*;
+
+    #[test]
+    fn instatiating_lexer() {
+        let string = String::from("asdjn dasndj asnd 32 32e3 ndk 2");
+        let mut lexer = Lexer::new(&string);
+    }
+    #[test]
+    fn integer_token0() {
+        let string = String::from("123 ");
+        let mut lexer = Lexer::new(&string);
+        lexer.next().unwrap();
+    }
+    #[test]
+    fn integer_token1() {
+        let string = String::from("123");
+        let mut lexer = Lexer::new(&string);
+        match lexer.next().unwrap() {
+            Ok(Token::Integer(string)) => (),
+            value => panic!(format!("{:?}", value))
+        };
+    }
+    #[test]
+    fn float_token0() {
+        let string = String::from("123.24");
+        let mut lexer = Lexer::new(&string);
+        lexer.next().unwrap();
+    }
+
+
+}

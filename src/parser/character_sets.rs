@@ -1,6 +1,6 @@
-#![warn(dead_code)]
-#![warn(unused_imports)]
-const a: i32 = 34;
+// #![warn(dead_code)]
+// #![warn(unused_imports)]
+
 // Initializers
 pub const DIGIT_INIT: &str = "123456789";
 pub const WHITE_SPACE: &str = " ";
