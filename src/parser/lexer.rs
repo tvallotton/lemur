@@ -122,12 +122,19 @@ impl<'a> Lexer<'a> {
             match self.stream.next() {
                 Some(c) => {
                     if c == '+' || c == '-' || cs::INTEGER.contains(c) {
+                        if cs::INTEGER.contains(c) {
+                            number.push('+');
+                        }
                         let pow = self.stream.walk_while(cs::INTEGER);
                         if pow.len() == 0 {
                             let message = String::from(
                                 "Invalid float literal. An order of magnitud was expected.",
                             );
                             Err(self.syntax_error(&message))
+                        } else if self.stream.peek() == 'i' {
+                            number.push_str(&pow);
+                            self.stream.next();
+                            Ok(Token::Complex(number))
                         } else {
                             number.push_str(&pow);
                             Ok(Token::Float(number))
@@ -263,47 +270,170 @@ mod tests {
     // 6) an entire program
     // 7) keywords
     // 8) variables
+    fn single_token(string: &str) -> Result<Token, SyntaxError> {
+        let s = String::from(string);
+        let mut lexer = Lexer::new(&s);
+        lexer.next();
+        lexer.next().unwrap()
+    }
     #[test]
-    fn instatiating_lexer() {
-        let string = String::from("variable  \"the string\" 234 3.34e-34 345.34i 34i\n   \'a\',.|{}[]#():; comentario asd asd\nfin_comentario!  ");
-        let mut lexer = Lexer::new(&string);
-        let output = vec![
-            Token::Indentation(0),
-            Token::Variable("variable".to_string()),
-            Token::String("the string".to_string()),
-            Token::Integer("234".to_string()),
-            Token::Float("3.34e-34".to_string()),
-            Token::Complex("345.34".to_string()),
-            Token::Complex("34".to_string()),
-            Token::Indentation(3),
-            Token::Char("a".to_string()),
-            Token::Comma,
-            Token::Period,
-            Token::VerticalLine,
-            Token::OCurly,
-            Token::CCurly,
-            Token::OSquare,
-            Token::CSquare,
-            Token::Hash,
-            Token::OParens,
-            Token::CParens,
-            Token::Colon,
-            Token::Indentation(0),
-            Token::FuncMacro("fin_comentario".to_string()),
-        ];
-        for (item, expected) in lexer.zip(output) {
-            match item {
-                Err(error) => {
-                    println!("Error: {:?}", error);
-                }
-                Ok(value) => {
-                    if expected != value {
-                        println!("ERROR: expected {:?} != got {:?}", expected, value);
-                    } else {
-                        println!("OK: expected {:?} == got {:?}", expected, value);
-                    }
-                }
-            }
+    fn string_token() {
+        let result = single_token("\"string\\\"sad\"");
+        let expect = Token::String("string\"sad".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn char_token() {
+        let result = single_token("'a'");
+        let expect = Token::Char("a".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+        #[test]
+    fn scape_char() {
+        let result = single_token("'\\'");
+        let expect = Token::Char("\\".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn variable_token() {
+        let result = single_token("variable_123");
+        let expect = Token::Variable("variable_123".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn integer_token() {
+        let result = single_token("1234567890");
+        let expect = Token::Integer("1234567890".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token0() {
+        let result = single_token("1.234e-304-");
+        let expect = Token::Float("1.234e-304".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token1() {
+        let result = single_token("987e-654e");
+        let expect = Token::Float("987e-654".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token2() {
+        let result = single_token("124e+304+");
+        let expect = Token::Float("124e+304".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token3() {
+        let result = single_token("13.0987654321_");
+        let expect = Token::Float("13.0987654321".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token4() {
+        let result = single_token("124E-34");
+        let expect = Token::Float("124e-34".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token5() {
+        let result = single_token("13e34");
+        let expect = Token::Float("13e+34".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn float_token6() {
+        let result = single_token("13E44");
+        let expect = Token::Float("13e+44".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn complex_token0() {
+        let result = single_token("136i");
+        let expect = Token::Complex("136".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn complex_token1() {
+        let result = single_token("13.09876i");
+        let expect = Token::Complex("13.09876".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn complex_token2() {
+        let result = single_token("213e3i");
+        let expect = Token::Complex("213e+3".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn complex_token3() {
+        let result = single_token("21.3e3i");
+        let expect = Token::Complex("21.3e+3".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
         }
     }
 }
