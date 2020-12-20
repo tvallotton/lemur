@@ -11,11 +11,11 @@ pub const CHAR_INIT      : &str = "'";
 pub const NOT_SYMBOL_INIT: &str = " \n\t\r_qwertyuiopasd  
                                    fghjklzxcvbnmQWERTYUIOASD 
                                    FGHJKLZXCVBNM!1234567890. 
-                                   ;,{}[]()”“\\\"";
+                                   ;,{}[]()”“'\\\"";
 
 // body
 pub const SPECIAL_TOKENS: &str = SPECIAL_INIT;
-pub const INTEGER: &str = "1234567890";
-pub const NOT_SYMBOLS: &str = NOT_SYMBOL_INIT;
+pub const INTEGER       : &str = "1234567890";
+pub const NOT_SYMBOLS   : &str = NOT_SYMBOL_INIT;
 pub const ID_INITIALIZER: &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-pub const ID: &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+pub const ID            : &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";

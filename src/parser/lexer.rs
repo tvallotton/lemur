@@ -296,7 +296,7 @@ mod tests {
             panic!()
         }
     }
-        #[test]
+    #[test]
     fn scape_char() {
         let result = single_token("'\\'");
         let expect = Token::Char("\\".to_string());
@@ -436,4 +436,18 @@ mod tests {
             panic!()
         }
     }
+    #[test]
+    fn symbol_token0() {
+        let result = single_token("¢∞¬÷654");
+        let expect = Token::Symbol("¢∞¬÷".to_string());
+        if let Ok(token) = result {
+            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+        } else {
+            panic!()
+        }
+    }
+
 }
+
+
+
