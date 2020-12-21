@@ -1,5 +1,5 @@
 /target
-
+.gitignore
 
 count_lines.py
 .vscode

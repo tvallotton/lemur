@@ -23,7 +23,7 @@ enum DataDecl {
     Data {
         name: Identifier,
         args: Vec<Identifier>,
-        body: HashMap<Identifier, Type>
+        body: HashMap<Identifier, TypeSignature>
     }
     // Instance*
 
@@ -60,6 +60,8 @@ struct TypeDeclaration {
 
 
 
+
+    
 
 
 
