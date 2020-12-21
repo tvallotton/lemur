@@ -3,4 +3,19 @@
 
 
 
-f : (a: )
+
+Data {
+    name: "List",
+    params: ["a"],
+    body: [("field", type) ...]
+}
+
+
+Emun {
+    name: "
+}
+
+
+data List a {
+    
+}

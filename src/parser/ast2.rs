@@ -16,6 +16,8 @@ struct Module {
 enum DataDecl {
     
     Enum {
+        name: Identifier,
+        args: Vec<>
         
         
     }

@@ -1,133 +1,134 @@
 use rug;
+use std::collections::HashMap;
 
 pub struct Module {
-    pub imports: Vex<Import>,             // ready to test
-    pub data_declarations: Vec<DataDecl>, //
+    pub imports: Vec<Import>,         // ready
+    pub type_declarations: Vec<Type>, // ready
+    pub data_declarations: Vec<DataDecl>,
     pub assignments: Vec<Asignment>,
-    pub type_declarations: Vec<Type>,
+}
+
+// DATA DECLARATIONS
+
+pub struct Struct {
+    name: Variable,
+    body: HashMap<Variable, TypeSignature>,
+}
+
+pub enum DataDecl {
+    Enum {
+        name: Variable,
+        args: Vec<Variable>,
+        structs: Struct,
+    },
+    Data {
+        name: Variable,
+        args: Vec<Variable>,
+        body: HashMap<Variable, TypeSignature>,
+    },
 }
 
 // IMPORTS
 pub struct Import {
-    name: InstanceCall,
-    pseudonym: Identifier,
+    name: Identifier,
+    pseudonym: Variable,
 }
 
-
-
-// // TYPE DECLARATIONS
-// struct Type {
-//     generic: Bool,
-//     name: Identifier,
-//     params: Vec<Type>,
-// }
-// struct TypeSignature {
-//     context: Vec<TypeDeclaration>,
-//     value: Vec<Type>,
-// }
-
-// struct TypeDeclaration {
-//     name: Identifier,
-//     value: TypeSignature,
-// }
-
-
-// // ASIGNMENTS
-
-// struct Asignment {
-//     name: Identifier,
-//     args: Vec<String>,
-//     value: Box<Expr>,
-// }
-
-
-// enum Primitive {
-//     Float(f64),
-//     Complex, 
-//     Integer(i64),
-//     String,
-//     Char(String),
-//     List(Vec<Expr>),
-//     NamedTuple(HashMap<Identifier, Box<Expr>>),
-//     AnonymusTuple(Vec<Expr>),
-// }
-
-
-
-
-
-// enum Expr {
-//     // function call            #
-//     // let                      #
-//     // index access array[i]    
-//     // if then else             #
-//     // literals 
-//     // list comprehensions      
-//     // when cuards              
-//     // case of expression
-//     // binary operator
-//     // do notation
-//     // standalone variable
-//     // Instance call
-//     Variable(Identifier),
-    
-//     Literal(Primitive),
-    
-//     FuncCall {
-//         name: Identifier,
-//         arg0: Box<Expr>,
-//     },
-
-//     // ready
-//     Let {
-//         asignments: Vec<Asignment>,
-//         expression: Box<Expr>,
-//     },
-
-    
-    
-
-    
-
-//     ListComp {
-//         value: Box<Expr>,
-//         binds: Vec<MonadicBiding>,
-//         filters: Vec<Expr>,
-//     },
-//     IfThenElse {
-//         cond: Box<Expr>,
-//         then: Box<Expr>,
-//         else_: Box<Expr>,
-//     },
-//     WhenGuard {
-//         cond: Box<Expr>,
-//         then: Box<Expr>,
-//         else_: Box<Expr>,
-//     },
-//     Caseof {
-//         value: Box<Expr>,
-//         matches: (Box<Expr>, Box<Expr>),
-//     },
-// }
-
-
-// pub Variable = String;
-
-// pub Identifier {
-//     parent: String,
-//     children: Vec<String>
-// }
-// impl Identifier {
-//     fn base(&self) -> bool {
-//         self.children.len() == 0
-//     }
-// }
-
-
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use rug;
+// TYPE DECLARATIONS
+pub struct Type {
+    generic: bool,
+    name: Identifier,
+    params: Vec<Type>,
 }
+pub struct TypeSignature {
+    context: Vec<TypeDeclaration>,
+    value: Vec<Type>,
+}
+
+pub struct TypeDeclaration {
+    name: Variable,
+    value: TypeSignature,
+}
+
+// ASIGNMENTS
+
+pub struct Asignment {
+    name: Identifier,
+    args: Vec<String>,
+    value: Box<Expr>,
+}
+
+pub enum Primitive {
+    Float(f64),
+    Complex(f64),
+    Integer(rug::Integer),
+    String(String),
+    Char(char),
+    List(Vec<Expr>),
+    NamedTuple(HashMap<Variable, Box<Expr>>),
+    AnonymusTuple(Vec<Expr>),
+}
+
+pub enum Expr {
+
+    // function call            #
+    // let                      #
+    // index access array[i]
+    // if then else             #
+    // literals
+    // list comprehensions
+    // when cuards
+    // case of expression
+    // binary operator
+    // do notation
+    // standalone variable
+    // Instance call
+    // slices 1..10 
+    Variable(Identifier),
+    //
+    Literal(Primitive),
+    //
+    FuncCall {
+        name: Identifier,
+        arg0: Box<Expr>,
+    },
+
+    // ready
+    Let {
+        asignments: Vec<Asignment>,
+        expression: Box<Expr>,
+    },
+
+    //
+    //
+
+    //  [ value | bind <- Expr, assign = 3, filter % 2 == 0 ]
+    ListComp {
+        value: Box<Expr>,   
+        binds: HashMap<Variable, Expr>,
+        assignments: Vec<Asignment>,
+        filters: Vec<Expr>,
+    },
+
+    IfThenElse {
+        cond: Box<Expr>,
+        then: Box<Expr>,
+        else_: Box<Expr>,
+    },
+    WhenGuard {
+        cond: Box<Expr>,
+        then: Box<Expr>,
+        else_: Box<Expr>,
+    },
+    Caseof {
+        value: Box<Expr>,
+        matches: (Box<Expr>, Box<Expr>),
+    },
+}
+
+pub type Variable = String;
+pub struct Identifier {
+    parent: Variable,
+    children: Vec<Variable>,
+}
+
