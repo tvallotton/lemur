@@ -1,7 +1,5 @@
 use super::errors::Position;
 
-
-
 pub struct Stream<'a> {
     iterator: std::str::Chars<'a>,
     char: char,
@@ -93,5 +91,19 @@ impl<'a> Stream<'a> {
             out.push(c);
         }
         out
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_iterator() {
+        let string = String::from("sadknf asdjfek \nasdfm");
+        let stream = Stream::from(&string);
+
+        for (c0, c1) in stream.zip(string.chars()) {
+            assert_eq!(c0, c1);
+        }
     }
 }
