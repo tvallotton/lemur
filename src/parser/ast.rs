@@ -1,20 +1,25 @@
 use rug;
 use std::collections::HashMap;
 
+
+#[derive(PartialEq)]
 pub struct Module {
+    pub name: Variable,
     pub imports: Vec<Import>,         // ready
+    pub sub_modules: Vec<Module>,     // ready I guess
     pub type_declarations: Vec<Type>, // ready
     pub data_declarations: Vec<DataDecl>,
     pub assignments: Vec<Asignment>,
 }
 
 // DATA DECLARATIONS
-
+#[derive(PartialEq)]
 pub struct Struct {
     name: Variable,
     body: Vec<TypeDeclaration>,
 }
 
+#[derive(PartialEq)]
 pub enum DataDecl {
     Synm {
         name: Type, 
@@ -33,35 +38,38 @@ pub enum DataDecl {
 }
 
 // IMPORTS
+#[derive(PartialEq)]
 pub struct Import {
     name: Identifier,
     pseudonym: Variable,
 }
 
 // TYPE DECLARATIONS
+#[derive(PartialEq)]
 pub struct Type {
     generic: bool,
     name: Identifier,
     params: Vec<Type>,
 }
+#[derive(PartialEq)]
 pub struct TypeSignature {
     context: Vec<TypeDeclaration>,
     value: Vec<Type>,
 }
-
+#[derive(PartialEq)]
 pub struct TypeDeclaration {
     name: Variable,
     value: TypeSignature,
 }
 
 // ASIGNMENTS
-
+#[derive(PartialEq)]
 pub struct Asignment {
     name: Identifier,
     args: Vec<String>,
     value: Box<Expr>,
 }
-
+#[derive(PartialEq)]
 pub enum Primitive {
     Float(f64),
     Complex(f64),
@@ -72,7 +80,7 @@ pub enum Primitive {
     NamedTuple(HashMap<Variable, Box<Expr>>),
     AnonymusTuple(Vec<Expr>),
 }
-
+#[derive(PartialEq)]
 pub enum Expr {
 
     // function call            #
@@ -131,6 +139,9 @@ pub enum Expr {
 }
 
 pub type Variable = String;
+
+
+#[derive(PartialEq)]
 pub struct Identifier {
     parent: Variable,
     children: Vec<Variable>,
