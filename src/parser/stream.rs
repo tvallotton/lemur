@@ -1,5 +1,7 @@
 use super::errors::Position;
 
+
+
 pub struct Stream<'a> {
     iterator: std::str::Chars<'a>,
     char: char,

@@ -12,10 +12,14 @@ pub struct Module {
 
 pub struct Struct {
     name: Variable,
-    body: HashMap<Variable, TypeSignature>,
+    body: Vec<TypeDeclaration>,
 }
 
 pub enum DataDecl {
+    Synm {
+        name: Type, 
+        def: Type
+    },
     Enum {
         name: Variable,
         args: Vec<Variable>,
@@ -24,7 +28,7 @@ pub enum DataDecl {
     Data {
         name: Variable,
         args: Vec<Variable>,
-        body: HashMap<Variable, TypeSignature>,
+        body: Vec<TypeDeclaration>,
     },
 }
 
@@ -131,4 +135,7 @@ pub struct Identifier {
     parent: Variable,
     children: Vec<Variable>,
 }
+
+
+
 

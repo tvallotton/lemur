@@ -5,14 +5,16 @@ use super::stream::Stream;
 use super::tokens;
 use super::tokens::Token;
 
-struct Lexer<'a> {
+
+
+pub struct Lexer<'a> {
     string: &'a String,
     stream: Stream<'a>,
     checkpoint: Position,
 }
 
 impl<'a> Lexer<'a> {
-    fn new(string: &'a String) -> Lexer<'a> {
+    pub fn new(string: &'a String) -> Lexer<'a> {
         Lexer {
             string: string,
             stream: Stream::from(string),
@@ -197,7 +199,7 @@ impl<'a> Lexer<'a> {
             if c == '"' && !except {
                 eof = false;
                 break;
-            } else if c == '\\' {
+            } else if c == '\\' && !except  {
                 except = true;
             } else {
                 except = false;
@@ -220,7 +222,7 @@ impl<'a> Lexer<'a> {
             if c == '\'' && !except {
                 eof = false;
                 break;
-            } else if c == '\\' {
+            } else if c == '\\' && !except {
                 except = true;
             } else {
                 except = false;
@@ -298,12 +300,12 @@ mod tests {
     }
     #[test]
     fn scape_char() {
-        let result = single_token("'\\'");
+        let result = single_token("'\\\\'");  // equivalente to lemur '\\'
         let expect = Token::Char("\\".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
-            panic!()
+            panic!("Got {:?}", result)
         }
     }
     #[test]
