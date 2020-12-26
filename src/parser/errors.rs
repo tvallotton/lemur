@@ -5,9 +5,18 @@ use crate::settings::{
     FOLLOWING_LINES
 };
 #[derive(Debug)]
-pub struct Line {
+pub struct Line<'a> {
     pub number: i32,
-    pub content: String,
+    pub content: &'a str,
+}
+
+impl<'a> Line<'a> {
+    fn init() -> Line<'a>{
+        Line {
+            number: 123,
+            content: ""
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -21,27 +30,20 @@ impl Position {
         return Position { row, col };
     }
 }
+
 #[derive(Debug)]
-pub struct SyntaxError {
-    pub line: Line,
+pub struct SyntaxError<'a> {
+    pub line: Line<'a>,
     pub message: String,
     pub underline: String,
-    pub previous_lines: Vec<Line>,
-    pub following_lines: Vec<Line>,
+    pub previous_lines: Vec<Line<'a>>,
+    pub following_lines: Vec<Line<'a>>,
 }
 
-impl Line {
-    fn init() -> Line {
-        return Line {
-            content: String::new(),
-            number: 0,
-        };
-    }
-}
 
-impl SyntaxError {
+impl<'a> SyntaxError<'a> {
     // Listo y testedo
-    pub fn new(string: &String, row: i32, cols: (i32, i32)) -> SyntaxError {
+    pub fn new(string: &str, row: i32, cols: (i32, i32)) -> SyntaxError {
         let (target_line, previous_lines, following_lines) = SyntaxError::get_lines(string, row);
         let message = String::new();
         let underline = SyntaxError::get_underline(cols, '^');
@@ -55,7 +57,7 @@ impl SyntaxError {
         };
     }
     // Listo y testedo
-    fn get_lines(string: &String, row: i32) -> (Line, Vec<Line>, Vec<Line>) {
+    fn get_lines(string: &str, row: i32) -> (Line, Vec<Line>, Vec<Line>) {
         let mut previous_lines = Vec::new();
         let mut following_lines = Vec::new();
         let mut target_line = Line::init();
@@ -64,17 +66,17 @@ impl SyntaxError {
             if row - PREVIOUS_LINES < num && num < row {
                 previous_lines.push(Line {
                     number: num,
-                    content: String::from(line),
+                    content: line,
                 });
             } else if row == num {
                 target_line = Line {
                     number: num,
-                    content: String::from(line),
+                    content: line,
                 };
             } else if row < num && num < row + FOLLOWING_LINES {
                 following_lines.push(Line {
                     number: num,
-                    content: String::from(line),
+                    content: line,
                 });
             } else if num > row + FOLLOWING_LINES {
                 break;

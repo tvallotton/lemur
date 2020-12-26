@@ -46,14 +46,14 @@ pub enum Token<'a> {
     Keyword(&'a str),
     FuncMacro(&'a str),
     Variable(&'a str),
-    Integer(&'a str),
+    Integer(String),
     String(&'a str),
     FString(&'a str),
     Char(&'a str),
-    Float(&'a str),
-    Complex(&'a str),
+    Float(String),
+    Complex(String),
     Bool(&'a str),   // True || False
-    Symbol(&'a str), // 
+    Symbol(&'a str), //
     Indentation(i32),
     // special tokens
     Comma,
@@ -68,4 +68,3 @@ pub enum Token<'a> {
     Colon,
     Period,
 }
-
