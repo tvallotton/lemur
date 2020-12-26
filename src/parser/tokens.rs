@@ -42,18 +42,18 @@ pub const KEYWORDS: [&str; 34] = [
 ];
 
 #[derive(Debug, PartialEq)]
-pub enum Token<'a> {
-    Keyword(&'a str),
-    FuncMacro(&'a str),
-    Variable(&'a str),
+pub enum Token {
+    Keyword(String),
+    FuncMacro(String),
+    Variable(String),
     Integer(String),
-    String(&'a str),
-    FString(&'a str),
-    Char(&'a str),
+    String(String),
+    FString(String),
+    Char(String),
     Float(String),
     Complex(String),
-    Bool(&'a str),   // True || False
-    Symbol(&'a str), //
+    Bool(String),   // True || False
+    Symbol(String), // 
     Indentation(i32),
     // special tokens
     Comma,
@@ -68,3 +68,4 @@ pub enum Token<'a> {
     Colon,
     Period,
 }
+

@@ -5,14 +5,16 @@ use super::stream::Stream;
 use super::tokens;
 use super::tokens::Token;
 
+
+
 pub struct Lexer<'a> {
-    string: &'a str,
+    string: &'a String,
     stream: Stream<'a>,
     checkpoint: Position,
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(string: &'a str) -> Lexer<'a> {
+    pub fn new(string: &'a String) -> Lexer<'a> {
         Lexer {
             string: string,
             stream: Stream::from(string),
@@ -24,7 +26,7 @@ impl<'a> Lexer<'a> {
         self.checkpoint = self.stream.pos();
     }
 
-    fn syntax_error(&self, message: &str) -> SyntaxError<'a> {
+    fn syntax_error(&self, message: &str) -> SyntaxError {
         let pos = self.stream.pos();
         let col0 = self.checkpoint.col;
         let col1 = pos.col;
@@ -35,11 +37,10 @@ impl<'a> Lexer<'a> {
 }
 
 impl<'a> Iterator for Lexer<'a> {
-    type Item = Result<Token<'a>, SyntaxError<'a>>;
+    type Item = Result<Token, SyntaxError>;
 
-    fn next(&mut self) -> Option<Result<Token<'a>, SyntaxError<'a>>> {
+    fn next(&mut self) -> Option<Result<Token, SyntaxError>> {
         self.set_checkpoint();
-        self.stream.begin_slice();
         let char = String::from(self.stream.peek());
 
         if self.stream.eof() {
@@ -65,7 +66,7 @@ impl<'a> Iterator for Lexer<'a> {
         } else if char == "\t" {
             Some(Err(self.syntax_error("Tabs are not supported.")))
         } else {
-            Some(self.read_symbol())
+            Some(self.read_symbol(char))
         }
     }
 }
@@ -80,8 +81,8 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    // ready
-    fn read_indent(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
+    // ready to test
+    fn read_indent(&mut self) -> Result<Token, SyntaxError> {
         let mut count: i32 = 0;
         for c in &mut self.stream {
             if c != ' ' {
@@ -92,7 +93,7 @@ impl<'a> Lexer<'a> {
         return Ok(Token::Indentation(count));
     }
     // ready to test
-    fn read_digit(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
+    fn read_digit(&mut self) -> Result<Token, SyntaxError> {
         let mut number = String::new();
         number.push_str(&self.stream.walk_while(cs::INTEGER));
         let char = self.stream.peek();
@@ -106,7 +107,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn read_float(&mut self, mut number: String) -> Result<Token<'a>, SyntaxError<'a>> {
+    fn read_float(&mut self, mut number: String) -> Result<Token, SyntaxError> {
         if self.stream.peek() == '.' {
             number.push('.');
             for c in &mut self.stream {
@@ -158,21 +159,11 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn read_identifier(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
-        // let mut out = String::new();
-        // out.push_str(&self.stream.walk_while(&cs::ID));
+    fn read_identifier(&mut self) -> Result<Token, SyntaxError> {
+        let mut out = String::new();
+        out.push_str(&self.stream.walk_while(&cs::ID));
 
-        // if tokens::KEYWORDS.contains(&&*out) {
-        //     Ok(Token::Keyword(&out))
-        // } else if self.stream.peek() == '!' {
-        //     self.stream.next();
-        //     Ok(Token::FuncMacro(&out))
-        // } else {
-        //     Ok(Token::Variable(&out))
-        // }
-        let out: &str = self.stream.walk_while(&cs::ID);
-
-        if tokens::KEYWORDS.contains(&out) {
+        if tokens::KEYWORDS.contains(&&*out) {
             Ok(Token::Keyword(out))
         } else if self.stream.peek() == '!' {
             self.stream.next();
@@ -182,7 +173,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn read_sepcial_tokens(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
+    fn read_sepcial_tokens(&mut self) -> Result<Token, SyntaxError> {
         let char = self.stream.peek();
         self.stream.next();
         match char {
@@ -200,77 +191,49 @@ impl<'a> Lexer<'a> {
             _ => panic!("This should never happen."),
         }
     }
-    fn read_string(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
-        // let mut out = String::new();
-        // let mut except = false;
-        // let mut eof = true;
-        // for c in &mut self.stream {
-        //     if c == '"' && !except {
-        //         eof = false;
-        //         break;
-        //     } else if c == '\\' && !except {
-        //         except = true;
-        //     } else {
-        //         except = false;
-        //         out.push(c);
-        //     }
-        // }
-        // self.stream.next();
-        // if eof {
-        //     Err(self.syntax_error("Unexpected end of file while parsing string literal."))
-        // } else {
-        //     Ok(Token::String(out))
-        // }
-
-        self.stream.next();
-        while let Some(char) = self.stream.next() {
-            self.stream.begin_slice();
-
-            if char == '\\' {
-                self.stream.next();
-            } else if char == '"' {
-                return Ok(Token::String(self.stream.get_slice()));
+    fn read_string(&mut self) -> Result<Token, SyntaxError> {
+        let mut out = String::new();
+        let mut except = false;
+        let mut eof = true;
+        for c in &mut self.stream {
+            if c == '"' && !except {
+                eof = false;
+                break;
+            } else if c == '\\' && !except  {
+                except = true;
             } else {
-                continue;
+                except = false;
+                out.push(c);
             }
         }
-        Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+        self.stream.next();
+        if eof {
+            Err(self.syntax_error("Unexpected end of file while parsing string literal."))
+        } else {
+            Ok(Token::String(out))
+        }
     }
 
-    fn read_char(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
-        // let mut out = String::new();
-        // let mut except = false;
-        // let mut eof = true;
-        // for c in &mut self.stream {
-        //     if c == '\'' && !except {
-        //         eof = false;
-        //         break;
-        //     } else if c == '\\' && !except {
-        //         except = true;
-        //     } else {
-        //         except = false;
-        //         out.push(c);
-        //     }
-        // }
-        // self.stream.next();
-        // if eof {
-        //     Err(self.syntax_error("Unexpected end of file while parsing character literal."))
-        // } else {
-        //     Ok(Token::Char(&out))
-        // }
-        self.stream.next();
-        loop {
-            self.stream.begin_slice();
-            let option = self.stream.next();
-            if let Some('\\') = &option {
-                self.stream.next();
-            } else if let Some('\'') = &option {
-                return Ok(Token::Char(self.stream.get_slice()));
-            } else if let None = &option {
-                return Err(
-                    self.syntax_error("Unexpected end of file while parsing string literal.")
-                );
+    fn read_char(&mut self) -> Result<Token, SyntaxError> {
+        let mut out = String::new();
+        let mut except = false;
+        let mut eof = true;
+        for c in &mut self.stream {
+            if c == '\'' && !except {
+                eof = false;
+                break;
+            } else if c == '\\' && !except {
+                except = true;
+            } else {
+                except = false;
+                out.push(c);
             }
+        }
+        self.stream.next();
+        if eof {
+            Err(self.syntax_error("Unexpected end of file while parsing character literal."))
+        } else {
+            Ok(Token::Char(out))
         }
     }
 
@@ -282,8 +245,14 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn read_symbol(&mut self) -> Result<Token<'a>, SyntaxError<'a>> {
-        let out = self.stream.walk_while_not(cs::NOT_SYMBOLS);
+    fn read_symbol(&mut self, mut out: String) -> Result<Token, SyntaxError> {
+        for c in &mut self.stream {
+            if !cs::NOT_SYMBOLS.contains(c) {
+                out.push(c);
+            } else {
+                break;
+            }
+        }
         Ok(Token::Symbol(out))
     }
 }
@@ -303,14 +272,16 @@ mod tests {
     // 6) an entire program
     // 7) keywords
     // 8) variables
-    fn single_token<'a>(string: &'a str) -> Result<Token<'a>, SyntaxError<'a>> {
-        let mut lexer = Lexer::new(string);
+    fn single_token(string: &str) -> Result<Token, SyntaxError> {
+        let s = String::from(string);
+        let mut lexer = Lexer::new(&s);
+        lexer.next();
         lexer.next().unwrap()
     }
     #[test]
     fn string_token() {
         let result = single_token("\"string\\\"sad\"");
-        let expect = Token::String("string\"sad");
+        let expect = Token::String("string\"sad".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -320,7 +291,7 @@ mod tests {
     #[test]
     fn char_token() {
         let result = single_token("'a'");
-        let expect = Token::Char("a");
+        let expect = Token::Char("a".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -329,8 +300,8 @@ mod tests {
     }
     #[test]
     fn scape_char() {
-        let result = single_token("'\\\\'"); // equivalente to lemur '\\'
-        let expect = Token::Char("\\");
+        let result = single_token("'\\\\'");  // equivalente to lemur '\\'
+        let expect = Token::Char("\\".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -340,7 +311,7 @@ mod tests {
     #[test]
     fn variable_token() {
         let result = single_token("variable_123");
-        let expect = Token::Variable("variable_123");
+        let expect = Token::Variable("variable_123".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -350,7 +321,7 @@ mod tests {
     #[test]
     fn integer_token() {
         let result = single_token("1234567890");
-        let expect = Token::Integer(String::from("1234567890"));
+        let expect = Token::Integer("1234567890".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -360,7 +331,7 @@ mod tests {
     #[test]
     fn float_token0() {
         let result = single_token("1.234e-304-");
-        let expect = Token::Float(String::from("1.234e-304"));
+        let expect = Token::Float("1.234e-304".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -370,7 +341,7 @@ mod tests {
     #[test]
     fn float_token1() {
         let result = single_token("987e-654e");
-        let expect = Token::Float(String::from("987e-654"));
+        let expect = Token::Float("987e-654".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -380,7 +351,7 @@ mod tests {
     #[test]
     fn float_token2() {
         let result = single_token("124e+304+");
-        let expect = Token::Float(String::from("124e+304"));
+        let expect = Token::Float("124e+304".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -390,7 +361,7 @@ mod tests {
     #[test]
     fn float_token3() {
         let result = single_token("13.0987654321_");
-        let expect = Token::Float(String::from("13.0987654321"));
+        let expect = Token::Float("13.0987654321".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -400,7 +371,7 @@ mod tests {
     #[test]
     fn float_token4() {
         let result = single_token("124E-34");
-        let expect = Token::Float(String::from("124e-34"));
+        let expect = Token::Float("124e-34".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -410,7 +381,7 @@ mod tests {
     #[test]
     fn float_token5() {
         let result = single_token("13e34");
-        let expect = Token::Float(String::from("13e+34"));
+        let expect = Token::Float("13e+34".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -420,7 +391,7 @@ mod tests {
     #[test]
     fn float_token6() {
         let result = single_token("13E44");
-        let expect = Token::Float(String::from("13e+44"));
+        let expect = Token::Float("13e+44".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -430,7 +401,7 @@ mod tests {
     #[test]
     fn complex_token0() {
         let result = single_token("136i");
-        let expect = Token::Complex(String::from("136"));
+        let expect = Token::Complex("136".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -440,7 +411,7 @@ mod tests {
     #[test]
     fn complex_token1() {
         let result = single_token("13.09876i");
-        let expect = Token::Complex(String::from("13.09876"));
+        let expect = Token::Complex("13.09876".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -450,7 +421,7 @@ mod tests {
     #[test]
     fn complex_token2() {
         let result = single_token("213e3i");
-        let expect = Token::Complex(String::from("213e+3"));
+        let expect = Token::Complex("213e+3".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -460,7 +431,7 @@ mod tests {
     #[test]
     fn complex_token3() {
         let result = single_token("21.3e3i");
-        let expect = Token::Complex(String::from("21.3e+3"));
+        let expect = Token::Complex("21.3e+3".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
@@ -470,11 +441,15 @@ mod tests {
     #[test]
     fn symbol_token0() {
         let result = single_token("¢∞¬÷654");
-        let expect = Token::Symbol("¢∞¬÷");
+        let expect = Token::Symbol("¢∞¬÷".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
         } else {
             panic!()
         }
     }
+
 }
+
+
+

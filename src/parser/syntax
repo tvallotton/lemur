@@ -1,48 +1,21 @@
 
 
-scalability: 
-
-    type safety
-    memory safety
-    modularity
-    no-undefined behaviour
-    testing 
-    generics 
-    enumerated types
-
-
-
-thing I dislike about haskell:
-    
-    No parametrized classes.
-    No asociated types.
-    No modularity: 
-        no dot notation for struct fields
-        no methods
-        no modularity for classes
-
-
-    List and Strings literals are Linked lists, not arrays (hence slow).
-    String and Char are ascii only.
-    No trailing comma
 
 
 
 
-
-
-data Variable_name {
-    type_declarations,
+Data {
+    name: "List",
+    params: ["a"],
+    body: [("field", type) ...]
 }
 
 
+Emun {
+    name: "
+}
 
 
-
-Expressions
-
-
-
-typechecker:
-
-    check correct number of args
+data List a {
+    
+}

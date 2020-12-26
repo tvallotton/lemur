@@ -1,58 +1,39 @@
 use super::errors::Position;
 
-
-
 pub struct Stream<'a> {
-    string: &'a str,
     iterator: std::str::Chars<'a>,
     char: char,
     eof: bool,
     position: Position,
-    start_index: usize,
-    end_index: usize,
 }
 
 impl<'a> From<&'a String> for Stream<'a> {
     fn from(string: &'a String) -> Stream<'a> {
         let iterator = string.chars();
-        let char = '\0';
+        let char = '\n';
         let eof = false;
         let position = Position { row: 0, col: 0 };
-        let start_index = 0;
-        let end_index = 0;
-        let mut stream = Stream {
-            string,
+        Stream {
             iterator,
             char,
             eof,
             position,
-            start_index,
-            end_index,
-        };
-        stream.next();
-        stream
+        }
     }
 }
 
 impl<'a> From<&'a str> for Stream<'a> {
     fn from(string: &'a str) -> Stream<'a> {
         let iterator = string.chars();
-        let char = '\0';
+        let char = '\n';
         let eof = false;
         let position = Position { row: 0, col: 0 };
-        let start_index = 0;
-        let end_index = 0;
-        let mut stream = Stream {
-            string,
+        Stream {
             iterator,
             char,
             eof,
             position,
-            start_index,
-            end_index,
-        };
-        stream.next();
-        stream
+        }
     }
 }
 
@@ -66,7 +47,6 @@ impl<'a> Iterator for Stream<'a> {
                 option
             }
             Some(char) => {
-                self.end_index += char.len_utf8();
                 self.char = char;
                 if self.char == '\n' {
                     self.position.col = 0;
@@ -91,33 +71,26 @@ impl<'a> Stream<'a> {
     pub fn peek(&self) -> char {
         self.char
     }
-    pub fn walk_while(&mut self, char_set: &str) -> &'a str {
-        self.begin_slice();
-
-        while let Some(c) = self.next() {
+    pub fn walk_while(&mut self, char_set: &str) -> String {
+        let mut out = String::from(self.char);
+        for c in self {
             if !char_set.contains(c) {
                 break;
             }
+            out.push(c);
         }
-        self.get_slice()
+        out
     }
 
-    pub fn begin_slice(&mut self) {
-        self.start_index = self.end_index - self.char.len_utf8();
-    }
-
-    pub fn get_slice(&self) -> &'a str {
-        &self.string[self.start_index..(self.end_index - self.char.len_utf8())]
-    }
-
-    pub fn walk_while_not(&mut self, char_set: &str) -> &'a str {
-        self.begin_slice();
-        while let Some(c) = self.next() {
+    pub fn walk_while_not(&mut self, char_set: &str) -> String {
+        let mut out = String::from(self.char);
+        for c in self {
             if char_set.contains(c) {
                 break;
             }
+            out.push(c);
         }
-        self.get_slice()
+        out
     }
 }
 
