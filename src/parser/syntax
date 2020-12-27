@@ -2,20 +2,62 @@
 
 
 
+Things to fix from haskell: 
+    1) No linked lists anymore
+    2) No ascii, utf-8 instead
+    3) Add asociated types
+    4) Flexible type instances
+    5) Parametrized type classes
 
 
-Data {
-    name: "List",
-    params: ["a"],
-    body: [("field", type) ...]
-}
+import prelude 
+
+trait Logical for t where
+    t: (  And t
+        & Or t
+        & Not t )
+
+trait Arithmetic for t where
+    t: (  Add t 
+        & Substract t
+        & Muliply t
+        & Division t
+        & Power t )
+
+impl From Complex for String where
+    from self = when
+        | self.imag < 0  => f"{self.real} - {-self.imag}"
+        | otherwise      => f"{self.real} + {self.imag}"
 
 
-Emun {
-    name: "
-}
 
 
-data List a {
+trait Add t0 for t1 where
+    type t2
+    add : t0 -> t1 -> t2
+
+trait Substract t0 for t1 where
+    type t2
+    substract : t0 -> t1 -> t2
+
+
+binary operators:
+
+    +
+    - (difficult)
+    * 
+    /
+    ** power
+    ^  something else?
+    @  matrix multiplication
+    &
+
+    and 
+    or 
     
-}
+
+    
+    <<
+    >>
+    >>= ?
+    

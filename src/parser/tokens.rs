@@ -3,7 +3,7 @@ pub const RESERVED_SYMBOLS: [&str; 8] = [
     ":", "|", "..",
 ];
 
-pub const KEYWORDS: [&str; 34] = [
+pub const KEYWORDS: [&str; 36] = [
     "let",
     "do",
     "where",
@@ -22,13 +22,15 @@ pub const KEYWORDS: [&str; 34] = [
     "try",
     "except",
     "finally",
-    "instance",
+    "impl",
+    "trait",
     "module",
     "using",
     "infix",
     "precedence",
     "alignment",
     // for possible future use
+    "pub"
     "end",
     "forall",
     "for",

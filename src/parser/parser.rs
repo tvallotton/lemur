@@ -43,15 +43,29 @@ impl<'a> Parser<'a> {
             } else if token == Token::Keyword("export") {
                 export = self.handle_export()?;
                 self.ast.exports.push(export);
+            } else if token == Token::Keyword("data") {
+                data = self.handle_data()?;
+                self.ast.data_declarations.push(enum_);
+            } else if token == Token::Keyword("enum") {
+                enum_ = self.handle_enum()?;
+                self.ast.data_declarations.push(enum_);
+            } else if token == Token::Keyword("trait") {
+                class = self.handle_class()?;
+                self.ast.trait_declarations.push(class);
+            } else if token == Token::Keyword("type") {
+                type_ = self.handle_instance()?;
+                self.ast.data_declarations.push(type_);
+            } else if token == Token::Keyword("impl") {
+                impl_ = self.handle_instance()?;
+                self.ast.impl_declarations.push(impl_);
+            } else if let Token::Variable(var) = token {
+                declaration = handle_variable()?;
             }
         }
     }
 
-    fn handle_module(&self) {
-        if let Some(result) = self.lexer.next() {
-        } else {
-        }
-    }
+
+    fn 
 
     fn raise_error(&mut self, message: String) {}
 }
