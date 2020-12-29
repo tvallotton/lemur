@@ -298,7 +298,7 @@ mod tests {
         let result = single_token("\"string\\\"sad\"");
         let expect = Token::String("string\"sad".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect)
         } else {
             panic!()
         }
@@ -325,7 +325,7 @@ mod tests {
         let result = single_token("'a'");
         let expect = Token::Char("a".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -335,7 +335,7 @@ mod tests {
         let result = single_token("'\\\\'"); // equivalente to lemur '\\'
         let expect = Token::Char("\\".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!("Got {:?}", result)
         }
@@ -345,7 +345,7 @@ mod tests {
         let result = single_token("variable_123");
         let expect = Token::Variable("variable_123".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -355,7 +355,7 @@ mod tests {
         let result = single_token("1234567890");
         let expect = Token::Integer("1234567890".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -365,7 +365,7 @@ mod tests {
         let result = single_token("1.234e-304-");
         let expect = Token::Float("1.234e-304".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -375,7 +375,7 @@ mod tests {
         let result = single_token("987e-654e");
         let expect = Token::Float("987e-654".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -385,7 +385,7 @@ mod tests {
         let result = single_token("124e+304+");
         let expect = Token::Float("124e+304".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -395,7 +395,7 @@ mod tests {
         let result = single_token("13.0987654321_");
         let expect = Token::Float("13.0987654321".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -405,7 +405,7 @@ mod tests {
         let result = single_token("124E-34");
         let expect = Token::Float("124e-34".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -415,7 +415,7 @@ mod tests {
         let result = single_token("13e34");
         let expect = Token::Float("13e+34".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -425,7 +425,7 @@ mod tests {
         let result = single_token("13E44");
         let expect = Token::Float("13e+44".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -435,7 +435,7 @@ mod tests {
         let result = single_token("136i");
         let expect = Token::Complex("136".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -445,7 +445,7 @@ mod tests {
         let result = single_token("13.09876i");
         let expect = Token::Complex("13.09876".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -455,7 +455,7 @@ mod tests {
         let result = single_token("213e3i");
         let expect = Token::Complex("213e+3".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -465,7 +465,7 @@ mod tests {
         let result = single_token("21.3e3i");
         let expect = Token::Complex("21.3e+3".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
@@ -475,7 +475,27 @@ mod tests {
         let result = single_token("¢∞¬÷654");
         let expect = Token::Symbol("¢∞¬÷".to_string());
         if let Ok(token) = result {
-            assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+            assert_eq!(token, expect,)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn symbol_token1() {
+        let result = single_token("||");
+        let expect = Token::Symbol("||".to_string());
+        if let Ok(token) = result {
+            assert_eq!(token, expect)
+        } else {
+            panic!()
+        }
+    }
+    #[test]
+    fn symbol_token2() {
+        let result = single_token("&&2132");
+        let expect = Token::Symbol("&&".to_string());
+        if let Ok(token) = result {
+            assert_eq!(token, expect,)
         } else {
             panic!()
         }
