@@ -31,7 +31,7 @@ impl<'a> Lexer<'a> {
         let pos = self.stream.pos();
         let col0 = self.previous_checkpoint.col;
         let col1 = pos.col;
-        let mut error = SyntaxError::new(self.string, pos.row, (col0, col1));
+        let mut error = SyntaxError::new(self.string, pos.row, (col0, col1 - 1));
         error.message = message.to_string();
         error
     }
@@ -300,14 +300,14 @@ mod tests {
     }
     #[test]
     fn highlight_last_token() {
-        let lexer = Lexer::new(&String::from("print(let 34.34  \"asd\" if at )"));
-
-        for result in lexer {
+        let mut lexer = Lexer::new("print(whils 34.34 '\\n' data \"asd\" if at )");
+        let expect = "  |\n1 | print(whils 34.34 \'\\n\' data \"asd\" if at )\n  |                             ^^^^^\nSyntax Error: This is a string";
+        for result in &mut lexer {
             if let Ok(Token::String(_)) = result {
                 break;
             }
         }
-        assert_eq!(lexer.highlight_last_token("This is a string").simple_display(), "");
+        assert_eq!(lexer.highlight_last_token("This is a string").simple_display(), expect);
     }
 
     #[test]

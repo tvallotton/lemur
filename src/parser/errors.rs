@@ -36,7 +36,7 @@ impl Line {
 
 impl SyntaxError {
     // Listo y testedo
-    pub fn new(string: &String, row: i32, cols: (i32, i32)) -> SyntaxError {
+    pub fn new(string: &str, row: i32, cols: (i32, i32)) -> SyntaxError {
         let (target_line, previous_lines, following_lines) = SyntaxError::get_lines(string, row);
         let message = String::new();
         let underline = SyntaxError::get_underline(cols, '^');
@@ -50,7 +50,7 @@ impl SyntaxError {
         };
     }
     // Listo y testedo
-    fn get_lines(string: &String, row: i32) -> (Line, Vec<Line>, Vec<Line>) {
+    fn get_lines(string: &str, row: i32) -> (Line, Vec<Line>, Vec<Line>) {
         let mut previous_lines = Vec::new();
         let mut following_lines = Vec::new();
         let mut target_line = Line::init();
