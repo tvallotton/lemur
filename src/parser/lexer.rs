@@ -5,12 +5,11 @@ use super::stream::Stream;
 use super::tokens;
 use super::tokens::Token;
 
-
-
 pub struct Lexer<'a> {
     string: &'a String,
     stream: Stream<'a>,
     checkpoint: Position,
+    previous_checkpoint: Position,
 }
 
 impl<'a> Lexer<'a> {
@@ -18,12 +17,23 @@ impl<'a> Lexer<'a> {
         Lexer {
             string: string,
             stream: Stream::from(string),
+            previous_checkpoint: Position::new(0, 0),
             checkpoint: Position::new(0, 0),
         }
     }
 
     fn set_checkpoint(&mut self) {
+        self.previous_checkpoint = self.checkpoint;
         self.checkpoint = self.stream.pos();
+    }
+
+    pub fn highlight_last_token(&mut self, message: &str) -> SyntaxError {
+        let pos = self.stream.pos();
+        let col0 = self.previous_checkpoint.col;
+        let col1 = pos.col;
+        let mut error = SyntaxError::new(self.string, pos.row, (col0, col1));
+        error.message = message.to_string();
+        error
     }
 
     fn syntax_error(&self, message: &str) -> SyntaxError {
@@ -199,7 +209,7 @@ impl<'a> Lexer<'a> {
             if c == '"' && !except {
                 eof = false;
                 break;
-            } else if c == '\\' && !except  {
+            } else if c == '\\' && !except {
                 except = true;
             } else {
                 except = false;
@@ -288,6 +298,16 @@ mod tests {
             panic!()
         }
     }
+    // #[test]
+    // fn string_token() {
+    //     let result = single_token("\"string\\\"sad\"");
+    //     let expect = Token::String("string\"sad".to_string());
+    //     if let Ok(token) = result {
+    //         assert!(token == expect, "found {:?}, expected {:?}", token, expect)
+    //     } else {
+    //         panic!()
+    //     }
+    // }
     #[test]
     fn char_token() {
         let result = single_token("'a'");
@@ -300,7 +320,7 @@ mod tests {
     }
     #[test]
     fn scape_char() {
-        let result = single_token("'\\\\'");  // equivalente to lemur '\\'
+        let result = single_token("'\\\\'"); // equivalente to lemur '\\'
         let expect = Token::Char("\\".to_string());
         if let Ok(token) = result {
             assert!(token == expect, "found {:?}, expected {:?}", token, expect)
@@ -448,8 +468,4 @@ mod tests {
             panic!()
         }
     }
-
 }
-
-
-

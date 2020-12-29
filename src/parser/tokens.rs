@@ -3,7 +3,7 @@ pub const RESERVED_SYMBOLS: [&str; 8] = [
     ":", "|", "..",
 ];
 
-pub const KEYWORDS: [&str; 36] = [
+pub const KEYWORDS: [&str; 37] = [
     "let",
     "do",
     "where",
@@ -30,7 +30,8 @@ pub const KEYWORDS: [&str; 36] = [
     "precedence",
     "alignment",
     // for possible future use
-    "pub"
+    "super",
+    "pub",
     "end",
     "forall",
     "for",
@@ -55,7 +56,7 @@ pub enum Token {
     Float(String),
     Complex(String),
     Bool(String),   // True || False
-    Symbol(String), // 
+    Symbol(String), //
     Indentation(i32),
     // special tokens
     Comma,
@@ -70,4 +71,3 @@ pub enum Token {
     Colon,
     Period,
 }
-

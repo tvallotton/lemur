@@ -41,6 +41,25 @@ trait Substract t0 for t1 where
     substract : t0 -> t1 -> t2
 
 
+
+trait Indexable t0 for t1 where
+    type t3
+    index : t1 -> t0 -> t3
+
+impl Indexable Int for List t0 where
+    type t0 
+    index self i = 
+        let
+            aux self i = when
+                | i == 0    => self.head
+                | otherwise => aux self.tail (i - 1)
+                
+            if i < 0 then
+                panic!
+            else 
+                aux self i
+
+
 binary operators:
 
     +

@@ -1,9 +1,6 @@
 // const PREVIOUS_LINES: i32 = 1;
 // const FOLLOWING_LINES: i32 = 1;
-use crate::settings::{
-    PREVIOUS_LINES,
-    FOLLOWING_LINES
-};
+use crate::settings::{FOLLOWING_LINES, PREVIOUS_LINES};
 #[derive(Debug)]
 pub struct Line {
     pub number: i32,
@@ -93,15 +90,38 @@ impl SyntaxError {
         }
         return out;
     }
+
+    pub fn simple_display(&self) -> String {
+        let len = format!("{}", self.line.number + 1).len();
+        let mut space = String::new();
+        for _ in 0..len {
+            space.push(' ');
+        }
+        format!(
+            "{} |\n{} | {}\n{} | {}\nSyntax Error: {}",
+            space, self.line.number + 1, 
+            self.line.content, 
+            space, self.underline, 
+            self.message
+        )
+    }
 }
 
-// Tests
-fn main() {
-    let string = String::from("asdasjkd sdnjdf s\ndjf n- 32m asdmjasm,d on\njknm2324r n\nfkalñs3mr '0hj 45jgir\nof qwefrpig20 i\n3ef0grosavsf d a32 j");
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn simple_display() {
+        let string = String::from(
+            "asdhjrwqd
+        hello world
+        good by world
+        ",
+        );
 
-    println!("{}", string);
-
-    let se = SyntaxError::new(&string, 3, (2, 7));
-
-    println!("{}\n{}\n", se.line.content, se.underline);
+        let expect = "  |\n2 |         hello world\n  |         ^^^^^^^^^^^\nSyntax Error: You stupid dog";
+        let mut syntax_error = SyntaxError::new(&string, 1, (8, 19));
+        syntax_error.message = String::from("You stupid dog");
+        assert_eq!(syntax_error.simple_display(), expect);
+    }
 }

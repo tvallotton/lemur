@@ -77,7 +77,7 @@ pub enum Pattern {
 pub struct Asignment {
     name: Option<Identifier>,
     args: Vec<Pattern>,
-    value: Expr,
+    value: Box<Expr>,
 }
 #[derive(PartialEq)]
 pub enum Primitive {
@@ -142,7 +142,7 @@ pub enum Expr {
 
     Do {
         bind: Option<Asignment>,
-        expr: Expr,
+        expr: Box<Expr>,
     }
 }
 
