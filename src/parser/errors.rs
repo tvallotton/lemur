@@ -1,5 +1,3 @@
-// const PREVIOUS_LINES: i32 = 1;
-// const FOLLOWING_LINES: i32 = 1;
 use crate::settings::{FOLLOWING_LINES, PREVIOUS_LINES};
 #[derive(Debug)]
 pub struct Line {
@@ -99,9 +97,11 @@ impl SyntaxError {
         }
         format!(
             "{} |\n{} | {}\n{} | {}\nSyntax Error: {}",
-            space, self.line.number + 1, 
-            self.line.content, 
-            space, self.underline, 
+            space,
+            self.line.number + 1,
+            self.line.content,
+            space,
+            self.underline,
             self.message
         )
     }
@@ -119,9 +119,11 @@ mod tests {
         ",
         );
 
-        let expect = "  |\n2 |         hello world\n  |         ^^^^^^^^^^^\nSyntax Error: You stupid dog";
+        let expect =
+            "  |\n2 |         hello world\n  |         ^^^^^^^^^^^\nSyntax Error: You stupid dog";
         let mut syntax_error = SyntaxError::new(&string, 1, (8, 19));
         syntax_error.message = String::from("You stupid dog");
         assert_eq!(syntax_error.simple_display(), expect);
     }
 }
+

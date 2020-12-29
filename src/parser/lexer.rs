@@ -6,14 +6,14 @@ use super::tokens;
 use super::tokens::Token;
 
 pub struct Lexer<'a> {
-    string: &'a String,
+    string: &'a str,
     stream: Stream<'a>,
     checkpoint: Position,
     previous_checkpoint: Position,
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(string: &'a String) -> Lexer<'a> {
+    pub fn new(string: &'a str) -> Lexer<'a> {
         Lexer {
             string: string,
             stream: Stream::from(string),
@@ -298,16 +298,18 @@ mod tests {
             panic!()
         }
     }
-    // #[test]
-    // fn string_token() {
-    //     let result = single_token("\"string\\\"sad\"");
-    //     let expect = Token::String("string\"sad".to_string());
-    //     if let Ok(token) = result {
-    //         assert!(token == expect, "found {:?}, expected {:?}", token, expect)
-    //     } else {
-    //         panic!()
-    //     }
-    // }
+    #[test]
+    fn highlight_last_token() {
+        let lexer = Lexer::new(&String::from("print(let 34.34  \"asd\" if at )"));
+
+        for result in lexer {
+            if let Ok(Token::String(_)) = result {
+                break;
+            }
+        }
+        assert_eq!(lexer.highlight_last_token("This is a string").simple_display(), "");
+    }
+
     #[test]
     fn char_token() {
         let result = single_token("'a'");

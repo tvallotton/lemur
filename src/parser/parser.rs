@@ -71,7 +71,7 @@ impl<'a> Parser<'a> {
     fn read_identifier(&mut self) -> Result<ast::Identifier, SyntaxError> {
 
 
-        let option = self.lexer.next();
+            let option = self.lexer.next();
         if let Some(token) = option {
             if let Token::Keyword("super") = token {
 
@@ -87,14 +87,14 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn highlight_last_token() -> SyntaxError {
+    
+}
 
-    }
 
     fn raise_error(&mut self, message: String) -> SyntaxError {
         self.lexer.syntax_error("Unexpected con")
     }
-}
+
 
 #[cfg(test)]
 mod tests {
@@ -134,3 +134,8 @@ mod tests {
         assert!(module == expected);
     }
 }
+
+
+
+
+
