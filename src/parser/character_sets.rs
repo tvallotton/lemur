@@ -8,7 +8,7 @@ pub const WHITE_SPACE    : &str = " ";
 pub const ID_INIT        : &str = "asdfghjklqwertyuiopzxcvbnmASDFGHJKLQWERTYUIOPZXCVBNM";
 pub const SPECIAL_INIT   : &str = ",.:(){}[]|#";
 pub const CHAR_INIT      : &str = "'";
-pub const NOT_SYMBOL_INIT: &str = " \n\t\r_qwertyuiopasd  
+pub const NOT_SYMBOL_INIT: &str = "\n\t\r_qwertyuiopasd  
                                    fghjklzxcvbnmQWERTYUIOASD 
                                    FGHJKLZXCVBNM!1234567890. 
                                    ;,{}[]()”“'\\\"";

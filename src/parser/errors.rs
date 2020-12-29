@@ -1,5 +1,5 @@
 use crate::settings::{FOLLOWING_LINES, PREVIOUS_LINES};
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Line {
     pub number: i32,
     pub content: String,
@@ -16,7 +16,7 @@ impl Position {
         return Position { row, col };
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SyntaxError {
     pub line: Line,
     pub message: String,

@@ -6,8 +6,12 @@ Things to fix from haskell:
     1) No linked lists anymore
     2) No ascii, utf-8 instead
     3) Add asociated types
-    4) Flexible type instances
-    5) Parametrized type classes
+    4) Flexible type instances by default
+    5) Parametrized type classes by default
+    6) Macros
+    7) if let
+
+
 
 
 import prelude 
@@ -53,7 +57,7 @@ impl Indexable Int for List t0 where
             aux self i = when
                 | i == 0    => self.head
                 | otherwise => aux self.tail (i - 1)
-                
+
             if i < 0 then
                 panic!
             else 

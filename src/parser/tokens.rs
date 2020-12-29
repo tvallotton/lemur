@@ -44,7 +44,7 @@ pub const KEYWORDS: [&str; 37] = [
     "macro",
 ];
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Keyword(String),
     FuncMacro(String),

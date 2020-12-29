@@ -92,10 +92,10 @@ pub enum Primitive {
 }
 #[derive(PartialEq)]
 
-// function call            
-// let                      
+// function call
+// let
 // index access array[i]
-// if then else             
+// if then else
 // literals
 // list comprehensions
 // when cuards
@@ -143,7 +143,7 @@ pub enum Expr {
     Do {
         bind: Option<Asignment>,
         expr: Box<Expr>,
-    }
+    },
 }
 
 pub type Variable = String;
@@ -162,4 +162,3 @@ pub struct Identifier {
 // plain variables
 
 // (n1, n2) = expr
-

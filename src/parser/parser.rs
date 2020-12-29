@@ -1,7 +1,7 @@
-use super::ast;
-use super::errors::SyntaxError;
-use super::lexer::Lexer;
-use super::tokens::Token;
+// use super::ast;
+// use super::errors::SyntaxError;
+// use super::lexer::Lexer;
+// use super::tokens::Token;
 
 struct Parser<'a> {
     lexer: Lexer<'a>,
@@ -31,7 +31,7 @@ impl<'a> Parser<'a> {
     fn build(&self) {}
 
     fn build_next(&self) -> Result((), SyntaxError) {
-        let option = self.lexer.next();
+        let option = self.lexer.peek();
         if let Some(result) = option {
             let token = result?;
             if token == Token::Keyword("import") {
@@ -63,38 +63,49 @@ impl<'a> Parser<'a> {
             }
         }
     }
-    
+
     fn handle_import(&mut self) -> Result<ast::Import, SyntaxError> {
         let identifier = self.read_identifier()?;
     }
 
     fn read_identifier(&mut self) -> Result<ast::Identifier, SyntaxError> {
-
-
-            let option = self.lexer.next();
+        let out;
+        let option = self.lexer.next();
         if let Some(token) = option {
             if let Token::Keyword("super") = token {
-
-            } else if let Token::Variable(var) = token { 
-
-            } else {
-                return self.
+                out = Identifier {
+                    parent: "super",
+                    child: vec![],
+                };
+            } else if let Token::Variable(var) = token {
+                out = Identifier {
+                    parent: var,
+                    child: vec![],
+                };
             }
+            while let Some(result) = self.lexer.next() {
+                let token = result?;
+            }
+            return Err(self.unexpected_token("an identifier."));
+        } else {
+            Err(self.raise_eof())
         }
-
-        while let Some(result) = self.lexer.next() {
-            let token = result?;
-        }
+        while let Some(result) = self.lexer.next() {}
     }
 
-    
+    fn raise_eof(&self, object: &str) -> SyntaxError {
+        self.lexer
+            .highlight_last_token(format!("Unexpected end of file while parsing {}", object))
+    }
+    fn unexpected_token(&self, expected: &str) -> SyntaxError {
+        self.lexer
+            .highlight_last_token(format!("Unexpected token. Expected {}", allowed))
+    }
 }
 
-
-    fn raise_error(&mut self, message: String) -> SyntaxError {
-        self.lexer.syntax_error("Unexpected con")
-    }
-
+// fn raise_error(&mut self, message: String) -> SyntaxError {
+//     self.lexer.syntax_error("Unexpected con")
+// }
 
 #[cfg(test)]
 mod tests {
@@ -134,8 +145,3 @@ mod tests {
         assert!(module == expected);
     }
 }
-
-
-
-
-

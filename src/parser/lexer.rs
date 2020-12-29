@@ -9,6 +9,7 @@ pub struct Lexer<'a> {
     string: &'a str,
     stream: Stream<'a>,
     checkpoint: Position,
+    token: Result<Token, SyntaxError>,
     previous_checkpoint: Position,
 }
 
@@ -17,6 +18,7 @@ impl<'a> Lexer<'a> {
         Lexer {
             string: string,
             stream: Stream::from(string),
+            token: Ok(Token::Indentation(0)),
             previous_checkpoint: Position::new(0, 0),
             checkpoint: Position::new(0, 0),
         }
@@ -53,7 +55,7 @@ impl<'a> Iterator for Lexer<'a> {
         self.set_checkpoint();
         let char = String::from(self.stream.peek());
 
-        if self.stream.eof() {
+        self.token = if self.stream.eof() {
             None
         } else if cs::WHITE_SPACE.contains(&char) {
             Some(self.skip_white_space());
@@ -77,7 +79,8 @@ impl<'a> Iterator for Lexer<'a> {
             Some(Err(self.syntax_error("Tabs are not supported.")))
         } else {
             Some(self.read_symbol(char))
-        }
+        }?;
+        Some(self.token.clone())
     }
 }
 
@@ -185,11 +188,12 @@ impl<'a> Lexer<'a> {
 
     fn read_sepcial_tokens(&mut self) -> Result<Token, SyntaxError> {
         let char = self.stream.peek();
-        self.stream.next();
+        if self.stream.next() == Some('|') {
+            return Ok(Token::Symbol("||".to_string()));
+        }
         match char {
             ',' => Ok(Token::Comma),
             '#' => Ok(Token::Hash),
-            '|' => Ok(Token::VerticalLine),
             '{' => Ok(Token::OCurly),
             '}' => Ok(Token::CCurly),
             '[' => Ok(Token::OSquare),
@@ -198,6 +202,7 @@ impl<'a> Lexer<'a> {
             ')' => Ok(Token::CParens),
             ':' => Ok(Token::Colon),
             '.' => Ok(Token::Period),
+            '|' => Ok(Token::VerticalLine),
             _ => panic!("This should never happen."),
         }
     }
@@ -307,7 +312,12 @@ mod tests {
                 break;
             }
         }
-        assert_eq!(lexer.highlight_last_token("This is a string").simple_display(), expect);
+        assert_eq!(
+            lexer
+                .highlight_last_token("This is a string")
+                .simple_display(),
+            expect
+        );
     }
 
     #[test]
