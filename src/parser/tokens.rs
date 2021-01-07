@@ -3,7 +3,7 @@ pub const RESERVED_SYMBOLS: [&str; 8] = [
     ":", "|", "..",
 ];
 
-pub const KEYWORDS: [&str; 37] = [
+pub const KEYWORDS: [&str; 38] = [
     "let",
     "do",
     "where",
@@ -29,6 +29,7 @@ pub const KEYWORDS: [&str; 37] = [
     "infix",
     "precedence",
     "alignment",
+    "_",
     // for possible future use
     "super",
     "pub",
@@ -43,19 +44,19 @@ pub const KEYWORDS: [&str; 37] = [
     "syntax",
     "macro",
 ];
+ use rug;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Keyword(String),
     FuncMacro(String),
     Variable(String),
-    Integer(String),
+    Integer(rug::Integer),
     String(String),
-    FString(String),
     Char(String),
-    Float(String),
-    Complex(String),
-    Bool(String),   // True || False
+    Float(f64),
+    Complex(f64),
+    Bool(bool),   // True || False
     Symbol(String), //
     Indentation(i32),
     // special tokens
@@ -71,3 +72,5 @@ pub enum Token {
     Colon,
     Period,
 }
+
+
