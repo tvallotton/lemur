@@ -1,5 +1,7 @@
 use rug;
 use std::collections::HashMap;
+use super::super::lexer::tokens::*;
+
 
 #[derive(PartialEq)]
 pub struct Module {
@@ -151,8 +153,9 @@ pub type Variable = String;
 #[derive(PartialEq)]
 pub struct Identifier {
     parent: Variable,
-    children: Vec<Variable>,
+    children: Result<Variable, Identifier>,
 }
+
 
 // MODULE
 
