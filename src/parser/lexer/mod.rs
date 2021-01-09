@@ -1,7 +1,3 @@
-
-
-
-
 mod lexer;
 mod tests;
 
