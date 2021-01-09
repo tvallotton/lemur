@@ -1,9 +1,9 @@
-use crate::parser::character_sets as cs;
+use super::character_sets as cs;
 use crate::parser::errors::Position;
 use crate::parser::errors::SyntaxError;
 use crate::parser::stream::Stream;
-use crate::parser::tokens;
-use crate::parser::tokens::Token;
+use super::tokens;
+use super::tokens::Token;
 
 pub struct Lexer<'a> {
     string: &'a str,

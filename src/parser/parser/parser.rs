@@ -1,9 +1,11 @@
-// use super::ast;
-// use super::errors::SyntaxError;
-// use super::lexer::Lexer;
-// use super::tokens::Token;
+use crate::parser::ast;
+use crate::parser::errors::SyntaxError;
+use crate::parser::lexer::Lexer;
+use crate::parser::tokens::Token;
 
-struct Parser<'a> {
+use ast::Identifier;
+
+pub struct Parser<'a> {
     lexer: Lexer<'a>,
     string: &'a String,
     result: Result<ast::Module, SyntaxError>,
@@ -30,39 +32,41 @@ impl<'a> Parser<'a> {
 
     fn build(&self) {}
 
-    fn build_next(&self) -> Result((), SyntaxError) {
-        let option = self.lexer.peek();
-        if let Some(result) = option {
-            let token = result?;
-            if token == Token::Keyword("import") {
-                import = self.handle_import()?;
-                self.ast.imports.push(import);
-                // } else if token == Token::Keyword("import") {
-                //     import = self.handle_import()?;
-                //     self.ast.imports.push(import);
-                // } else if token == Token::Keyword("export") {
-                //     export = self.handle_export()?;
-                //     self.ast.exports.push(export);
-                // } else if token == Token::Keyword("data") {
-                //     data = self.handle_data()?;
-                //     self.ast.data_declarations.push(enum_);
-                // } else if token == Token::Keyword("enum") {
-                //     enum_ = self.handle_enum()?;
-                //     self.ast.data_declarations.push(enum_);
-                // } else if token == Token::Keyword("trait") {
-                //     class = self.handle_class()?;
-                //     self.ast.trait_declarations.push(class);
-                // } else if token == Token::Keyword("type") {
-                //     type_ = self.handle_instance()?;
-                //     self.ast.data_declarations.push(type_);
-                // } else if token == Token::Keyword("impl") {
-                //     impl_ = self.handle_instance()?;
-                //     self.ast.impl_declarations.push(impl_);
-                // } else if let Token::Variable(var) = token {
-                //     declaration = handle_variable()?;
-            }
-        }
-    }
+    // fn build_next(&self) -> Result((), SyntaxError) {
+    //     let option = self.lexer.peek();
+    //     if let Some(result) = option {
+    //         let token = result?;
+    //         if token == Token::Keyword("import") {
+    //             let import = self.handle_import()?;
+    //             self.ast.imports.push(import);
+    //             // } else if token == Token::Keyword("import") {
+    //             //     import = self.handle_import()?;
+    //             //     self.ast.imports.push(import);
+    //             // } else if token == Token::Keyword("export") {
+    //             //     export = self.handle_export()?;
+    //             //     self.ast.exports.push(export);
+    //             // } else if token == Token::Keyword("data") {
+    //             //     data = self.handle_data()?;
+    //             //     self.ast.data_declarations.push(enum_);
+    //             // } else if token == Token::Keyword("enum") {
+    //             //     enum_ = self.handle_enum()?;
+    //             //     self.ast.data_declarations.push(enum_);
+    //             // } else if token == Token::Keyword("trait") {
+    //             //     class = self.handle_class()?;
+    //             //     self.ast.trait_declarations.push(class);
+    //             // } else if token == Token::Keyword("type") {
+    //             //     type_ = self.handle_instance()?;
+    //             //     self.ast.data_declarations.push(type_);
+    //             // } else if token == Token::Keyword("impl") {
+    //             //     impl_ = self.handle_instance()?;
+    //             //     self.ast.impl_declarations.push(impl_);
+    //             // } else if let Token::Variable(var) = token {
+    //             //     declaration = handle_variable()?;
+    //         }
+    //     } else {
+    //         Err(self.unexpected_token());
+    //     }
+    // }
 
     fn handle_import(&mut self) -> Result<ast::Import, SyntaxError> {
         let identifier = self.read_identifier()?;
@@ -93,13 +97,19 @@ impl<'a> Parser<'a> {
         while let Some(result) = self.lexer.next() {}
     }
 
+
+
     fn raise_eof(&self, object: &str) -> SyntaxError {
         self.lexer
             .highlight_last_token(format!("Unexpected end of file while parsing {}", object))
     }
-    fn unexpected_token(&self, expected: &str) -> SyntaxError {
-        self.lexer
-            .highlight_last_token(format!("Unexpected token. Expected {}", allowed))
+    fn unexpected_token(&self, expected: Option<&str>) -> SyntaxError {
+        if let Some(allowed) = expected {
+            self.lexer
+                .highlight_last_token(format!("Unexpected token. Expected {}", allowed))
+        } else {
+            self.lexer.highlight_last_token("Unexpected token.")
+        }
     }
 }
 

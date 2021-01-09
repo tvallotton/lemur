@@ -3,7 +3,7 @@
 pub mod tests {
     use super::*;
     use crate::parser::errors::SyntaxError;
-    use crate::parser::tokens::Token;
+    use super::super::tokens::Token;
     use crate::parser::lexer::Lexer;
     // things to test
     // 1) new

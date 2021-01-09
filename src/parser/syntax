@@ -84,3 +84,58 @@ binary operators:
     >>
     >>= ?
     
+
+
+
+
+rust monad instance example
+trait Functor<T0, T1> {
+    type Output;
+    fn map(self, func: fn(T0) -> T1) -> Self::Output;
+}
+
+impl<T0, T1> Functor<T0, T1> for Vec<T0> {
+    type Output = Vec<T1>;
+    fn map(self, func: fn(T0) -> T1) -> Self::Output {
+        let mut output = Vec::new();
+
+        for element in self {
+            output.push(func(element))
+        }
+        output
+    }
+}
+
+
+trait Monad<T0, T1> {
+    type Mt0;
+    type Mt1;
+    fn pure(value: T0) -> Self::Mt0;
+    fn bind(self, func: fn(T0) ->Self::Mt1) -> Self::Mt1;
+
+}
+
+impl<T0, T1> Monad<T0, T1> for Vec<T0> {
+    type Mt0 = Vec<T0>;
+    type Mt1 = Vec<T1>;
+    fn pure(value: T0) ->Self::Mt0 {
+        vec![value]
+    }
+
+    fn bind(self, func: fn(T0) ->Self::Mt1) -> Self::Mt1{
+        
+        let mut out = Vec::new();
+        for element in self {
+            out.extend(func(element));
+        }
+        
+        out
+    }
+}
+
+
+haskell monad instance example
+
+
+class Monad m where
+    bind : 

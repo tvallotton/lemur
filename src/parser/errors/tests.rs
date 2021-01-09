@@ -1,4 +1,3 @@
-
 #[cfg(test)]
 pub mod tests {
     use crate::parser::errors::*;
@@ -19,4 +18,3 @@ pub mod tests {
         assert_eq!(syntax_error.simple_display(), expect);
     }
 }
-

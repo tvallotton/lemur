@@ -1,0 +1,34 @@
+
+
+
+data List<t> {
+    head : t
+    tail : List<t>
+}
+
+data Iter<t> {
+    position: usize,
+    array: &[t]
+}
+
+
+trait Iterator for i<t> where
+    next(&mut self): Option<t>
+
+
+instance Iterator for Iter<t> where
+
+    next(&mut self) := do
+        if self.list.null then 
+            head := self.list.head
+            self.list := self.tail
+            Some(head)
+        else 
+            None 
+    
+
+
+instance Monad for m<t> where
+    
+
+instance IntoIter for List<t> where 

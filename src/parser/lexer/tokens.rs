@@ -1,3 +1,5 @@
+use rug;
+
 pub const RESERVED_SYMBOLS: [&str; 8] = [
     "->", "=", ":=", "<-", "=>", //asd
     ":", "|", "..",
@@ -44,13 +46,17 @@ pub const KEYWORDS: [&str; 38] = [
     "syntax",
     "macro",
 ];
- use rug;
+
+
+
+
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Keyword(String),
     FuncMacro(String),
     Variable(String),
+    NamespaceCall(String, Box<Token>),
     Integer(rug::Integer),
     String(String),
     Char(String),
