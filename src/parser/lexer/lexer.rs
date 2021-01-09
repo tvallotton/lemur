@@ -1,9 +1,9 @@
 use super::character_sets as cs;
+use super::tokens;
+use super::tokens::Token;
 use crate::parser::errors::Position;
 use crate::parser::errors::SyntaxError;
 use crate::parser::stream::Stream;
-use super::tokens;
-use super::tokens::Token;
 
 pub struct Lexer<'a> {
     string: &'a str,
@@ -84,7 +84,6 @@ impl<'a> Iterator for Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    // ready to test
     fn skip_white_space(&mut self) {
         for c in &mut self.stream {
             if !cs::WHITE_SPACE.contains(c) {
@@ -93,7 +92,6 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    // ready to test
     fn read_indent(&mut self) -> Result<Token, SyntaxError> {
         let mut count: i32 = 0;
         for c in &mut self.stream {
@@ -104,7 +102,6 @@ impl<'a> Lexer<'a> {
         }
         return Ok(Token::Indentation(count));
     }
-    // ready to test
     fn read_digit(&mut self) -> Result<Token, SyntaxError> {
         let mut number = String::new();
         number.push_str(&self.stream.walk_while(cs::INTEGER));
@@ -173,17 +170,42 @@ impl<'a> Lexer<'a> {
     }
 
     fn read_identifier(&mut self) -> Result<Token, SyntaxError> {
+        
         let mut out = String::new();
+        
         out.push_str(&self.stream.walk_while(&cs::ID));
         if tokens::KEYWORDS.contains(&&*out) {
             Ok(Token::Keyword(out))
         } else if self.stream.peek() == '!' {
             self.stream.next();
             Ok(Token::FuncMacro(out))
-        } else {
-            Ok(Token::Variable(out))
+        } else if self.stream.peek() == '.' {
+            use Token::*;
+            self.stream.next();
+            let option = self.next();
+            if let None = &option {
+                return Err(self.syntax_error("Unexpected end of file."));
+            } 
+
+
+            let token = option.unwrap()?; 
+            if let NamespaceCall(_, _) = &token {
+                Ok(NamespaceCall(out, Box::new(token)))
+            }
+            else if let Variable(_) = &token {
+                Ok(NamespaceCall(out, Box::new(token)))
+            } else if let Token::Integer(_) = &token {
+                Ok(NamespaceCall(out, Box::new(token)))
+            }
+            else {
+                Err(self.highlight_last_token("Unexpected token. Expected and identifier or an integer."))
+            }
+
+            } else {
+                Ok(Token::Variable(out))
+            }
         }
-    }
+    
 
     fn read_sepcial_tokens(&mut self) -> Result<Token, SyntaxError> {
         let char = self.stream.peek();
@@ -270,3 +292,4 @@ impl<'a> Lexer<'a> {
         Ok(Token::Symbol(out))
     }
 }
+

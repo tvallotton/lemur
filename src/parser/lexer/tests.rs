@@ -1,10 +1,10 @@
-
 #[cfg(test)]
 pub mod tests {
+    use super::super::tokens::Token;
     use super::*;
     use crate::parser::errors::SyntaxError;
-    use super::super::tokens::Token;
     use crate::parser::lexer::Lexer;
+    use rug;
     // things to test
     // 1) new
     // 2) ints
@@ -225,6 +225,52 @@ pub mod tests {
             assert_eq!(token, expect,)
         } else {
             panic!()
+        }
+    }
+
+    #[test]
+    fn string_namespace_call() {
+        let result = single_token("asd.bsdf");
+        let expect = Token::NamespaceCall(
+            "asd".to_string(),
+            Box::new(Token::Variable("bsdf".to_string())),
+        );
+        if let Ok(token) = result {
+            assert_eq!(token, expect,)
+        } else {
+            panic!("{:?}", result)
+        }
+    }
+    #[test]
+    fn numeric_namespace_call() {
+        let result = single_token("asde.34");
+        let expect = Token::NamespaceCall(
+            "asde".to_string(),
+            Box::new(Token::Integer(rug::Integer::from(34))),
+        );
+        if let Ok(token) = result {
+            assert_eq!(token, expect,)
+        } else {
+            panic!("{:?}", result)
+        }
+    }
+    #[test]
+    fn deeply_nested_namespace_callr() {
+        let result = single_token("first.second.third.4");
+        let expect = Token::NamespaceCall(
+            "first".to_string(),
+            Box::new(Token::NamespaceCall(
+                "second".to_string(),
+                Box::new(Token::NamespaceCall(
+                    "third".to_string(),
+                    Box::new(Token::Integer(rug::Integer::from(4))),
+                )),
+            )),
+        );
+        if let Ok(token) = result {
+            assert_eq!(token, expect,)
+        } else {
+            panic!("{:?}", result)
         }
     }
 }
