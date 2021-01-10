@@ -6,11 +6,11 @@ use super::super::lexer::tokens::*;
 #[derive(PartialEq)]
 pub struct Module {
     pub name: Variable,
-    pub imports: Vec<Import>,         // ready
-    pub sub_modules: Vec<Module>,     // ready I guess
-    pub type_declarations: Vec<Type>, // ready
+    pub imports: Vec<Import>,        
+    pub sub_modules: Vec<Module>,    
+    pub type_declarations: Vec<Type>, 
     pub data_declarations: Vec<DataDecl>,
-    pub assignments: Vec<Asignment>,
+    pub assignments: Vec<Assignment>,
 }
 
 // DATA DECLARATIONS
@@ -41,11 +41,15 @@ pub enum DataDecl {
 // IMPORTS
 // import some.library
 // import some.library as shorthand
+// import super.some_modules
 #[derive(PartialEq)]
 pub struct Import {
     name: Identifier,
     pseudonym: Option<Variable>,
 }
+
+
+
 
 // TYPE DECLARATIONS
 #[derive(PartialEq)]
@@ -76,13 +80,14 @@ pub enum Pattern {
 }
 
 #[derive(PartialEq)]
-pub struct Asignment {
+pub struct Assignment {
     name: Option<Identifier>,
     args: Vec<Pattern>,
     value: Box<Expr>,
 }
 #[derive(PartialEq)]
 pub enum Primitive {
+    Bool(bool),
     Float(f64),
     Complex(f64),
     Integer(rug::Integer),
@@ -115,15 +120,17 @@ pub enum Expr {
         arg0: Box<Expr>,
     },
 
+    
+
     Let {
-        asignments: Vec<Asignment>,
+        asignments: Vec<Assignment>,
         expression: Box<Expr>,
     },
     //  [ value | bind <- Expr, assign = 3, filter % 2 == 0 ]
     ListComp {
         value: Box<Expr>,
-        binds: Vec<Asignment>,
-        assignments: Vec<Asignment>,
+        binds: Vec<Assignment>,
+        assignments: Vec<Assignment>,
         filters: Vec<Expr>,
     },
 
@@ -143,7 +150,8 @@ pub enum Expr {
     },
 
     Do {
-        bind: Option<Asignment>,
+        bind: Option<Assignment>,
+        assignment: Option<Assignment>,
         expr: Box<Expr>,
     },
 }
