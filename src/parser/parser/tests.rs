@@ -1,18 +1,14 @@
 
 
-#[cfg(test)]
-mod tests {
+use super::ast;
+use super::Parser;
+
+#[test]
+fn instatiate_parser() {
     
-    use crate::parser::ast;
-    use crate::parser::parser::parser::Parser;
-
-    #[test]
-    fn instatiate_parser() {
-        
-        let string = String::from("sdasd");
-        let _ = Parser::new(&string);
-    }
-
-
-    
+    let string = String::from("sdasd");
+    let _ = Parser::new(&string);
 }
+
+
+

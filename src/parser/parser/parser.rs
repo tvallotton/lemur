@@ -30,45 +30,11 @@ impl<'a> Parser<'a> {
         Parser::new(string, String::from("main"))
     }
 
-    fn map(&mut self, fn =>) {
-
+    fn map(&mut self, func: fn(Token) -> Token) {
+        
     }
 
-    // fn build_next(&self) -> Result((), SyntaxError) {
-    //     let option = self.lexer.peek();
-    //     if let Some(result) = option {
-    //         let token = result?;
-    //         if token == Token::Keyword("import") {
-    //             let import = self.handle_import()?;
-    //             self.ast.imports.push(import);
-    //             // } else if token == Token::Keyword("import") {
-    //             //     import = self.handle_import()?;
-    //             //     self.ast.imports.push(import);
-    //             // } else if token == Token::Keyword("export") {
-    //             //     export = self.handle_export()?;
-    //             //     self.ast.exports.push(export);
-    //             // } else if token == Token::Keyword("data") {
-    //             //     data = self.handle_data()?;
-    //             //     self.ast.data_declarations.push(enum_);
-    //             // } else if token == Token::Keyword("enum") {
-    //             //     enum_ = self.handle_enum()?;
-    //             //     self.ast.data_declarations.push(enum_);
-    //             // } else if token == Token::Keyword("trait") {
-    //             //     class = self.handle_class()?;
-    //             //     self.ast.trait_declarations.push(class);
-    //             // } else if token == Token::Keyword("type") {
-    //             //     type_ = self.handle_instance()?;
-    //             //     self.ast.data_declarations.push(type_);
-    //             // } else if token == Token::Keyword("impl") {
-    //             //     impl_ = self.handle_instance()?;
-    //             //     self.ast.impl_declarations.push(impl_);
-    //             // } else if let Token::Variable(var) = token {
-    //             //     declaration = handle_variable()?;
-    //         }
-    //     } else {
-    //         Err(self.unexpected_token());
-    //     }
-    // }
+
 
     fn handle_import(&mut self) -> Result<ast::Import, SyntaxError> {
         let identifier  = self.read_identifier()?;
@@ -131,8 +97,41 @@ impl<'a> Parser<'a> {
             self.lexer.highlight_last_token("Unexpected token.")
         }
     }
-}
 
-// fn raise_error(&mut self, message: String) -> SyntaxError {
-//     self.lexer.syntax_error("Unexpected con")
-// }
+
+    // fn build_next(&self) -> Result((), SyntaxError) {
+    //     let option = self.lexer.peek();
+    //     if let Some(result) = option {
+    //         let token = result?;
+    //         if token == Token::Keyword("import") {
+    //             let import = self.handle_import()?;
+    //             self.ast.imports.push(import);
+    //             // } else if token == Token::Keyword("import") {
+    //             //     import = self.handle_import()?;
+    //             //     self.ast.imports.push(import);
+    //             // } else if token == Token::Keyword("export") {
+    //             //     export = self.handle_export()?;
+    //             //     self.ast.exports.push(export);
+    //             // } else if token == Token::Keyword("data") {
+    //             //     data = self.handle_data()?;
+    //             //     self.ast.data_declarations.push(enum_);
+    //             // } else if token == Token::Keyword("enum") {
+    //             //     enum_ = self.handle_enum()?;
+    //             //     self.ast.data_declarations.push(enum_);
+    //             // } else if token == Token::Keyword("trait") {
+    //             //     class = self.handle_class()?;
+    //             //     self.ast.trait_declarations.push(class);
+    //             // } else if token == Token::Keyword("type") {
+    //             //     type_ = self.handle_instance()?;
+    //             //     self.ast.data_declarations.push(type_);
+    //             // } else if token == Token::Keyword("impl") {
+    //             //     impl_ = self.handle_instance()?;
+    //             //     self.ast.impl_declarations.push(impl_);
+    //             // } else if let Token::Variable(var) = token {
+    //             //     declaration = handle_variable()?;
+    //         }
+    //     } else {
+    //         Err(self.unexpected_token());
+    //     }
+    // }
+}
