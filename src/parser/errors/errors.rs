@@ -1,11 +1,11 @@
 use crate::settings::{FOLLOWING_LINES, PREVIOUS_LINES};
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Line {
     pub number: i32,
     pub content: String,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Position {
     pub row: i32,
     pub col: i32,
@@ -16,7 +16,7 @@ impl Position {
         return Position { row, col };
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SyntaxError {
     pub line: Line,
     pub message: String,
@@ -33,6 +33,7 @@ impl Line {
         };
     }
 }
+
 
 impl SyntaxError {
     // Listo y testedo

@@ -23,7 +23,9 @@ impl<'a> Lexer<'a> {
             checkpoint: Position::new(0, 0),
         }
     }
-
+    pub fn peek(&self) -> Result<Token, SyntaxError> {
+        self.token.clone()
+    }
     fn set_checkpoint(&mut self) {
         self.previous_checkpoint = self.checkpoint;
         self.checkpoint = self.stream.pos();
@@ -170,9 +172,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn read_identifier(&mut self) -> Result<Token, SyntaxError> {
-        
         let mut out = String::new();
-        
         out.push_str(&self.stream.walk_while(&cs::ID));
         if tokens::KEYWORDS.contains(&&*out) {
             Ok(Token::Keyword(out))
@@ -185,27 +185,24 @@ impl<'a> Lexer<'a> {
             let option = self.next();
             if let None = &option {
                 return Err(self.syntax_error("Unexpected end of file."));
-            } 
+            }
 
-
-            let token = option.unwrap()?; 
+            let token = option.unwrap()?;
             if let NamespaceCall(_, _) = &token {
                 Ok(NamespaceCall(out, Box::new(token)))
-            }
-            else if let Variable(_) = &token {
+            } else if let Variable(_) = &token {
                 Ok(NamespaceCall(out, Box::new(token)))
             } else if let Token::Integer(_) = &token {
                 Ok(NamespaceCall(out, Box::new(token)))
-            }
-            else {
-                Err(self.highlight_last_token("Unexpected token. Expected and identifier or an integer."))
-            }
-
             } else {
-                Ok(Token::Variable(out))
+                Err(self.highlight_last_token(
+                    "Unexpected token. Expected and identifier or an integer.",
+                ))
             }
+        } else {
+            Ok(Token::Variable(out))
         }
-    
+    }
 
     fn read_sepcial_tokens(&mut self) -> Result<Token, SyntaxError> {
         let char = self.stream.peek();
@@ -222,7 +219,6 @@ impl<'a> Lexer<'a> {
             '(' => Ok(Token::OParens),
             ')' => Ok(Token::CParens),
             ':' => Ok(Token::Colon),
-            '.' => Ok(Token::Period),
             '|' => Ok(Token::VerticalLine),
             _ => panic!("This should never happen."),
         }
@@ -268,8 +264,12 @@ impl<'a> Lexer<'a> {
         self.stream.next();
         if eof {
             Err(self.syntax_error("Unexpected end of file while parsing character literal."))
+        } else if out.chars().count() != 1 {
+            Err(self.syntax_error("expected one chacater"))
         } else {
-            Ok(Token::Char(out))
+            Ok(Token::Char(out.chars()
+                              .next()
+                              .unwrap()))
         }
     }
 
@@ -292,4 +292,3 @@ impl<'a> Lexer<'a> {
         Ok(Token::Symbol(out))
     }
 }
-

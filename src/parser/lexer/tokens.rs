@@ -1,3 +1,4 @@
+use super::super::parser::ast::Primitive;
 use rug;
 
 pub const RESERVED_SYMBOLS: [&str; 8] = [
@@ -47,10 +48,6 @@ pub const KEYWORDS: [&str; 38] = [
     "macro",
 ];
 
-
-
-
-
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Keyword(String),
@@ -59,10 +56,10 @@ pub enum Token {
     NamespaceCall(String, Box<Token>),
     Integer(rug::Integer),
     String(String),
-    Char(String),
+    Char(char),
     Float(f64),
     Complex(f64),
-    Bool(bool),   // True || False
+    Bool(bool),
     Symbol(String), //
     Indentation(i32),
     // special tokens
@@ -76,7 +73,19 @@ pub enum Token {
     OParens,
     CParens,
     Colon,
-    Period,
 }
 
-
+impl Token {
+    fn to_primitive(self) -> Primitive {
+        use Token::*;
+        match self {
+            Bool(b) => Primitive::Bool(b),
+            Integer(i) => Primitive::Integer(i),
+            Float(f) => Primitive::Float(f),
+            String(s) => Primitive::String(s),
+            Char(c) => Primitive::Char(c),
+            Complex(c) => Primitive::Complex(c),
+            _ => panic!(),
+        }
+    }
+}

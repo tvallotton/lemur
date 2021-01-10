@@ -121,7 +121,9 @@ pub enum Expr {
     },
 
     
-
+    // let 
+    //     a = val
+    //     a
     Let {
         asignments: Vec<Assignment>,
         expression: Box<Expr>,
@@ -134,34 +136,49 @@ pub enum Expr {
         filters: Vec<Expr>,
     },
 
+    // if condition then val0 else val1
     IfThenElse {
         cond: Box<Expr>,
         then: Box<Expr>,
         else_: Box<Expr>,
     },
+
+    // when
+    //     | cond0 => expr0
+    //     | cond1 => expr1
     WhenGuard {
         cond: Box<Expr>,
         then: Box<Expr>,
         else_: Box<Expr>,
     },
+
+    // case value of 
+    //     val0 => expr0
+    //     val1 => expr1
     Caseof {
         value: Box<Expr>,
         matches: (Box<Expr>, Box<Expr>),
     },
 
+    // do
+    //    x <- monad
+    //    y = 4
+    //    expr0    
     Do {
-        bind: Option<Assignment>,
-        assignment: Option<Assignment>,
+        steps: Result<Assignment, Assignment>,
         expr: Box<Expr>,
     },
 }
+
+
+
 
 pub type Variable = String;
 
 #[derive(PartialEq)]
 pub struct Identifier {
     parent: Variable,
-    children: Result<Variable, Identifier>,
+    children: Box<Result<Variable, Identifier>>,
 }
 
 

@@ -79,7 +79,7 @@ fn multiple_lines() {
 #[test]
 fn char_token() {
     let result = single_token("'a'");
-    let expect = Token::Char("a".to_string());
+    let expect = Token::Char('a');
     if let Ok(token) = result {
         assert_eq!(token, expect,)
     } else {
@@ -89,7 +89,7 @@ fn char_token() {
 #[test]
 fn scape_char() {
     let result = single_token("'\\\\'"); // equivalente to lemur '\\'
-    let expect = Token::Char("\\".to_string());
+    let expect = Token::Char('\\');
     if let Ok(token) = result {
         assert_eq!(token, expect,)
     } else {
