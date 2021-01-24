@@ -1,23 +1,21 @@
 use super::ast;
 use crate::parser::errors::SyntaxError;
-use crate::parser::lexer::Lexer;
 use crate::parser::lexer::tokens::Token;
+use crate::parser::lexer::Lexer;
 
 use ast::Identifier;
 
-pub struct Parser<'a> {
+pub struct ModuleParser<'a> {
     lexer: Lexer<'a>,
-    string: &'a String,
-    result: Result<ast::Module, SyntaxError>,
+    result: Result<ast::Module, Vec<SyntaxError>>,
 }
 
-impl<'a> Parser<'a> {
-    fn new(string: &'a String, name: String) -> Parser<'a> {
-        Parser {
+impl<'a> ModuleParser<'a> {
+    pub fn new(string: &'a String, name: &str) -> ModuleParser<'a> {
+        ModuleParser {
             lexer: Lexer::new(string),
-            string,
             result: Ok(ast::Module {
-                name,
+                name: name.to_owned(),
                 imports: vec![],
                 sub_modules: vec![],
                 type_declarations: vec![],
@@ -26,78 +24,46 @@ impl<'a> Parser<'a> {
             }),
         }
     }
-    fn new_main(string: &'a String) -> Parser<'a> {
-        Parser::new(string, String::from("main"))
+    pub fn new_main(string: &'a String) -> ModuleParser<'a> {
+        ModuleParser::new(string, "main")
     }
 
-    fn map(&mut self, func: fn(Token) -> Token) {
-        
-    }
-
-
-
-    fn handle_import(&mut self) -> Result<ast::Import, SyntaxError> {
-        let identifier  = self.read_identifier()?;
-        if self.expect_keyword("user") {
-
-            let pseudonym = self.read_variable()?;
-        Ok(ast::Import {
-                name: identifier,
-                pseudonym: Some(pseudonym),
-            })
+    fn peek_variable(&self) -> Result<ast::Variable, SyntaxError> {
+        if let Token::Variable(var_name) = self.lexer.peek()? {
+            Ok(var_name)
         } else {
-            Ok(ast::Import {
-                name: identifier,
-                pseudonum: None
-            })
+            Err(self.unexpected_token(Some("an identifier.")))
         }
-        
     }
 
-    fn expect_keyword(&mut self, kw: &str) -> bool {
-        Some(Ok(Token::Keyword(kw.to_string()))) == self.lexer.next()
-    }
-
-    fn read_variable(&self) -> Result<Token, SyntaxError> {
-        if let Some(Ok(Token::Variable(name))) = self.lexer.next() {
-            Ok(Token::Variable(name))
+    fn next_variable(&mut self) -> Result<ast::Variable, SyntaxError> {
+        if let None = self.lexer.next() {
+            Err(self.raise_eof())
         } else {
-            Err(self.lexer.highlight_last_token("an variable name."))
-        }}
-            
-    
-
-    fn read_identifier(&mut self) -> Result<ast::Identifier, SyntaxError> {
-        match self.lexer.next() {
-            Some(Ok(token)) => {
-                if let Token::NamespaceCall(_, _) = &token {
-                    Ok(token)
-                } else {
-                    self.lexer.highlight_last_token("an identifier.")
-                }
-            }
-
-            Some(error) => error,
-            _ => self.raise_eof()
+            self.peek_variable()
         }
+    }
+
+    fn raise_eof_message(&self, object: &str) -> SyntaxError {
+        self
+            .lexer
+            .syntax_error(
+            &format!("Unexpected end of file while parsing {}", 
+                    object)
+            )
         
     }
-
-
-
-    fn raise_eof(&self, object: &str) -> Err(SyntaxError) {
-        self.lexer
-            .highlight_last_token(format!("Unexpected end of file while parsing {}", object))
+    fn raise_eof(&self) -> SyntaxError {
+        self.raise_eof_message("Unexpected end of file.")
     }
-    fn unexpected_token(&self, expected: Option<&str>) -> Err(SyntaxError) {
+    fn unexpected_token(&self, expected: Option<&str>) -> SyntaxError {
         if let Some(allowed) = expected {
             self.lexer
-                .highlight_last_token(format!("Unexpected token. Expected {}", allowed))
+                .underline_last_token(&format!("Unexpected token. Expected {}", allowed))
         } else {
-            self.lexer.highlight_last_token("Unexpected token.")
+            self.lexer.underline_last_token("Unexpected token.")
         }
     }
-
 
     // fn build_next(&self) -> Result((), SyntaxError) {
     //     let option = self.lexer.peek();

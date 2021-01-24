@@ -28,7 +28,7 @@ fn string_token() {
     }
 }
 #[test]
-fn highlight_last_token() {
+fn underline_last_token() {
     let string = "print(whils 34.34 '\\n' data \"asd\" if at )";
     let mut lexer = Lexer::new(string);
     let expect = "   |\n 1 | print(whils 34.34 \'\\n\' data \"asd\" if at )\n   |                             ^^^^^\nSyntaxError: This is a string";
@@ -39,13 +39,13 @@ fn highlight_last_token() {
     }
     assert_eq!(
         lexer
-            .highlight_last_token("This is a string")
+            .underline_last_token("This is a string")
             .simple_display(string),
         expect
     );
 }
 #[test]
-fn highlight_int() {
+fn underline_int() {
     let string = "print(whils 34.34 32 '\\n' data \"asd\" if at )";
     let mut lexer = Lexer::new(string);
     let expect = "   |\n 1 | print(whils 34.34 32 \'\\n\' data \"asd\" if at )\n   |                   ^^\nSyntaxError: This is a string";
@@ -56,7 +56,7 @@ fn highlight_int() {
     }
     assert_eq!(
         lexer
-            .highlight_last_token("This is a string")
+            .underline_last_token("This is a string")
             .simple_display(string),
         expect
     );
@@ -90,7 +90,7 @@ fn char_delimeter_counted_once() {
 }
 
 #[test]
-fn highlight_float() {
+fn underline_float() {
     let string = "print(whils 34.3344 32 '\\n' data \"asd\" if at )";
     let mut lexer = Lexer::new(string);
     let expect = "   |\n 1 | print(whils 34.3344 32 \'\\n\' data \"asd\" if at )\n   |             ^^^^^^^\nSyntaxError: This is a string";
@@ -101,7 +101,7 @@ fn highlight_float() {
     }
     assert_eq!(
         lexer
-            .highlight_last_token("This is a string")
+            .underline_last_token("This is a string")
             .simple_display(string),
         expect
     );
@@ -118,7 +118,7 @@ fn multiple_lines() {
     }
     assert_eq!(
         lexer
-            .highlight_last_token("This is a string")
+            .underline_last_token("This is a string")
             .simple_display(string),
         expect
     );

@@ -1,13 +1,13 @@
 
 
 use super::ast;
-use super::Parser;
+use super::ModuleParser;
 
 #[test]
 fn instatiate_parser() {
     
     let string = String::from("sdasd");
-    let _ = Parser::new(&string);
+    let _ = ModuleParser::new(&string, "module_name");
 }
 
 

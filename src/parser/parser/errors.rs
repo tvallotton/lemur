@@ -4,7 +4,16 @@
 type Position = (usize, usize);
 
 struct ParsingError {
-    pub message: String,
-    pub start: Position,
-    pub end: Position,
+    syntax_error: SyntaxError
+    file_path: String,
+    hint: Option<String>
+}
+
+
+impl ParsingError {
+
+
+    fn start(&self) -> usize {
+        self.syntax_error.start
+    }
 }

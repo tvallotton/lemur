@@ -31,11 +31,11 @@ impl<'a> Lexer<'a> {
         self.checkpoint = self.stream.pos();
     }
 
-    pub fn highlight_last_token(&mut self, message: &str) -> SyntaxError {
+    pub fn underline_last_token(&self, message: &str) -> SyntaxError {
         SyntaxError::new(message.to_owned(), self.checkpoint, self.stream.pos())
     }
 
-    fn syntax_error(&self, message: &str) -> SyntaxError {
+    pub fn syntax_error(&self, message: &str) -> SyntaxError {
         let end = self.stream.pos();
         let mut start = end;
         start.col -= 1;
@@ -195,7 +195,7 @@ impl<'a> Lexer<'a> {
             } else if let Token::Integer(_) = &token {
                 Ok(NamespaceCall(out, Box::new(token)))
             } else {
-                Err(self.highlight_last_token(
+                Err(self.underline_last_token(
                     "Unexpected token. Expected and identifier or an integer.",
                 ))
             }
