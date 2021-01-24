@@ -29,8 +29,9 @@ fn string_token() {
 }
 #[test]
 fn highlight_last_token() {
-    let mut lexer = Lexer::new("print(whils 34.34 '\\n' data \"asd\" if at )");
-    let expect = "  |\n1 | print(whils 34.34 \'\\n\' data \"asd\" if at )\n  |                             ^^^^^\nSyntax Error: This is a string";
+    let string = "print(whils 34.34 '\\n' data \"asd\" if at )";
+    let mut lexer = Lexer::new(string);
+    let expect = "   |\n 1 | print(whils 34.34 \'\\n\' data \"asd\" if at )\n   |                             ^^^^^\nSyntaxError: This is a string";
     for result in &mut lexer {
         if let Ok(Token::String(_)) = result {
             break;
@@ -39,14 +40,15 @@ fn highlight_last_token() {
     assert_eq!(
         lexer
             .highlight_last_token("This is a string")
-            .simple_display(),
+            .simple_display(string),
         expect
     );
 }
 #[test]
 fn highlight_int() {
-    let mut lexer = Lexer::new("print(whils 34.34 32 '\\n' data \"asd\" if at )");
-    let expect = "  |\n1 | print(whils 34.34 32 \'\\n\' data \"asd\" if at )\n  |                   ^^\nSyntax Error: This is a string";
+    let string = "print(whils 34.34 32 '\\n' data \"asd\" if at )";
+    let mut lexer = Lexer::new(string);
+    let expect = "   |\n 1 | print(whils 34.34 32 \'\\n\' data \"asd\" if at )\n   |                   ^^\nSyntaxError: This is a string";
     for result in &mut lexer {
         if let Ok(Token::Integer(_)) = result {
             break;
@@ -55,14 +57,60 @@ fn highlight_int() {
     assert_eq!(
         lexer
             .highlight_last_token("This is a string")
-            .simple_display(),
+            .simple_display(string),
+        expect
+    );
+}
+#[test]
+fn string_delimeter_counted_once() {
+    let string = "string = \"my string\" \nend of file";
+    let mut lexer = Lexer::new(string);
+    for result in &mut lexer {
+        if let Err(_) = result {
+            panic!(
+                "String final delimeter is counted twice:
+            Once as ending the first string.
+            And second as starting a new string."
+            )
+        }
+    }
+}
+fn char_delimeter_counted_once() {
+    let string = "string = \'m\' \nend of file";
+    let mut lexer = Lexer::new(string);
+    for result in &mut lexer {
+        if let Err(_) = result {
+            panic!(
+                "Char final delimeter is counted twice:
+            Once as ending the first string.
+            And second as starting a new string."
+            )
+        }
+    }
+}
+
+#[test]
+fn highlight_float() {
+    let string = "print(whils 34.3344 32 '\\n' data \"asd\" if at )";
+    let mut lexer = Lexer::new(string);
+    let expect = "   |\n 1 | print(whils 34.3344 32 \'\\n\' data \"asd\" if at )\n   |             ^^^^^^^\nSyntaxError: This is a string";
+    for result in &mut lexer {
+        if let Ok(Token::Float(_)) = result {
+            break;
+        }
+    }
+    assert_eq!(
+        lexer
+            .highlight_last_token("This is a string")
+            .simple_display(string),
         expect
     );
 }
 #[test]
 fn multiple_lines() {
-    let mut lexer = Lexer::new("print\n(whils 34.34 32 '\\n' data \"asd\" if at )\nthirdline");
-    let expect = "  |\n2 | (whils 34.34 32 \'\\n\' data \"asd\" if at )\n  |              ^^\nSyntax Error: This is a string";
+    let string = "print\n(whils 34.34 32 '\\n' data \"asd\" if at )\nthirdline";
+    let mut lexer = Lexer::new(string);
+    let expect = "   |\n 2 | (whils 34.34 32 \'\\n\' data \"asd\" if at )\n   |              ^^\nSyntaxError: This is a string";
     for result in &mut lexer {
         if let Ok(Token::Integer(_)) = result {
             break;
@@ -71,7 +119,7 @@ fn multiple_lines() {
     assert_eq!(
         lexer
             .highlight_last_token("This is a string")
-            .simple_display(),
+            .simple_display(string),
         expect
     );
 }
@@ -86,6 +134,16 @@ fn char_token() {
         panic!()
     }
 }
+
+#[test]
+fn too_many_chars() {
+    let result = single_token("'asd'");
+    
+    if let Err(error) = result {
+        assert_eq!(error.message, "Expected one character."); 
+    }
+    
+}
 #[test]
 fn scape_char() {
     let result = single_token("'\\\\'"); // equivalente to lemur '\\'
@@ -93,7 +151,7 @@ fn scape_char() {
     if let Ok(token) = result {
         assert_eq!(token, expect,)
     } else {
-        panic!("Got {:?}", result)
+        panic!("{:?}", result.unwrap_err().simple_display("'\\\\'"))
     }
 }
 #[test]

@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 rug = "1.6.0"
 cargo-watch = "7.5.0"
+fstrings = "0.2.3"

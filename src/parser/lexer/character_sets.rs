@@ -19,3 +19,25 @@ pub const INTEGER       : &str = "1234567890";
 pub const NOT_SYMBOLS   : &str = NOT_SYMBOL_INIT;
 pub const ID_INITIALIZER: &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
 pub const ID            : &str = "_qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+
+
+
+
+pub fn is_digit(c: char) -> bool {
+    DIGIT_INIT.contains(c)
+}
+
+pub fn is_identifier(c: char) -> bool {
+    ID_INIT.contains(c)
+}
+
+pub fn is_special_token(c: char) -> bool {
+    SPECIAL_INIT.contains(c)
+}
+
+pub fn is_string(c: char) -> bool {
+    "\"".contains(c)
+}
+pub fn is_char(c: char) -> bool {
+    "\'".contains(c)
+}
