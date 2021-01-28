@@ -1,12 +1,21 @@
 use super::super::parser::ast::Primitive;
 use rug;
 
-pub const RESERVED_SYMBOLS: [&str; 8] = [
-    "->", "=", ":=", "<-", "=>", //asd
-    ":", "|", "..",
-];
+use std::collections::HashMap;
 
-pub const KEYWORDS: [&str; 38] = [
+
+
+    
+
+// pub static RESERVED_SYMBOLS: [&str; 8] = [
+//     "->", "=", 
+//     ":=", "<-", 
+//     "=>", ":", 
+//     "|",  "..",
+
+// ];
+
+pub const KEYWORDS: [&str; 40] = [
     "let",
     "do",
     "where",
@@ -22,38 +31,41 @@ pub const KEYWORDS: [&str; 38] = [
     "when",
     "case",
     "of",
-    "try",
-    "except",
-    "finally",
     "impl",
     "trait",
     "module",
     "using",
-    "infix",
-    "precedence",
     "alignment",
     "_",
-    // for possible future use
+    "in",
+// for possible future use
+    "try",
+    "class",
+    "instance",
+    "except",
+    "finally",
+    "alias",
     "super",
     "pub",
     "end",
     "forall",
     "for",
     "while",
+
+
     "mut",
+
+    // corroutines 
     "async",
     "await",
-    "in",
+
+    // for future support of macros
     "syntax",
     "macro",
+    "template"
 ];
 
 #[derive(Debug, PartialEq, Clone)]
-
-
-
-
-
 pub enum Token {
     Keyword(String),
     FuncMacro(String),
@@ -65,19 +77,27 @@ pub enum Token {
     Float(f64),
     Complex(f64),
     Bool(bool),
-    Symbol(String), //
+    Symbol(String), 
     Indentation(i32),
+
     // special tokens
-    Comma,
-    Hash,
-    VerticalLine,
-    OCurly,
-    CCurly,
-    OSquare,
-    CSquare,
-    OParens,
-    CParens,
-    Colon,
+    Comma,            // ,
+    Hash,             // #
+    VerticalLine,     // |
+    OCurly,           // {
+    CCurly,           // }
+    OSquare,          // [
+    CSquare,          // ]
+    OParens,          // )
+    CParens,          // (
+    Colon,            // :
+    RightArrow,       // ->
+    LeftArrow,        // <-
+    DoubleArrow,      // =>
+    RangeOperator,    // ..
+    Equals,           // =
+    ColonEquals,      // :=
+
 }
 
 impl Token {
@@ -94,3 +114,11 @@ impl Token {
         }
     }
 }
+
+
+
+
+
+
+
+

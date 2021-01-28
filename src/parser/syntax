@@ -6,13 +6,33 @@ Things to fix from haskell:
     1) No linked lists anymore
     2) No ascii, utf-8 instead
     3) Add asociated types
-    4) Flexible type instances by default
+    4) Flexible type instances by default 
     5) Parametrized type classes by default
     6) Macros
     7) if let
+    8) floating point ranges (1.0..10).step 0.2
+    9) named tuples
+    10) default values for tuples
+    11) guards MUST finish in otherwise
+
+Things I changed from haskell: 
+    1) when guards
+    2) => instead of -> in case of expressions
+    3) lambdas
+
+panic!("message")
 
 
 
+main = do
+    
+    try
+
+
+( args => when | cond => expr | cond => expr | otherwise => expr )
+
+class Logical where 
+    
 
 import prelude 
 

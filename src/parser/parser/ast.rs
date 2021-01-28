@@ -1,72 +1,81 @@
+use super::super::lexer::tokens::*;
 use rug;
 use std::collections::HashMap;
-use super::super::lexer::tokens::*;
-
 
 #[derive(PartialEq)]
 pub struct Module {
-    pub name: Variable,
-    pub imports: Vec<Import>,        
-    pub sub_modules: Vec<Module>,    
-    pub type_declarations: Vec<Type>, 
-    pub data_declarations: Vec<DataDecl>,
+    
+    pub imports: Vec<Import>,
+    pub submodules: HashMap<Variable, Module>,
+    pub types: Vec<Type>,
+    pub data: Vec<DataDecl>,
     pub assignments: Vec<Assignment>,
 }
 
-// DATA DECLARATIONS
-#[derive(PartialEq)]
-pub struct Struct {
-    name: Variable,
-    body: Vec<TypeDeclaration>,
-}
 
-#[derive(PartialEq)]
-pub enum DataDecl {
-    Synm {
-        name: Type,
-        def: Type,
-    },
-    Enum {
+pub type MonadicBinding = Assignment;
+pub type Variable = String;
+pub use import::*;
+pub use data::*;
+pub use types::*;
+
+mod data {
+    use super::*;
+
+    #[derive(PartialEq)]
+    pub struct Struct {
         name: Variable,
-        args: Vec<Variable>,
-        structs: Struct,
-    },
-    Data {
-        name: Variable,
-        args: Vec<Variable>,
         body: Vec<TypeDeclaration>,
-    },
+    }
+
+    #[derive(PartialEq)]
+    pub enum DataDecl {
+        Synm {
+            name: Type,
+            def: Type,
+        },
+        Enum {
+            name: Variable,
+            args: Vec<Variable>,
+            structs: Struct,
+        },
+        Data {
+            name: Variable,
+            args: Vec<Variable>,
+            body: Vec<TypeDeclaration>,
+        },
+    }
 }
 
-// IMPORTS
-// import some.library
-// import some.library as shorthand
-// import super.some_modules
-#[derive(PartialEq)]
-pub struct Import {
-    name: Identifier,
-    pseudonym: Option<Variable>,
+mod import {
+    use super::*;
+    #[derive(PartialEq)]
+    pub struct Import {
+        name: Identifier,
+        pseudonym: Option<Variable>,
+    }
 }
-
-
-
 
 // TYPE DECLARATIONS
-#[derive(PartialEq)]
-pub struct Type {
-    generic: bool,
-    name: Identifier,
-    params: Vec<Type>,
-}
-#[derive(PartialEq)]
-pub struct TypeSignature {
-    context: Vec<TypeDeclaration>,
-    value: Vec<Type>,
-}
-#[derive(PartialEq)]
-pub struct TypeDeclaration {
-    name: Variable,
-    value: TypeSignature,
+
+mod types {
+    use super::*;
+    #[derive(PartialEq)]
+    pub struct Type {
+        generic: bool,
+        name: Identifier,
+        params: Vec<Type>,
+    }
+    #[derive(PartialEq)]
+    pub struct TypeSignature {
+        context: Vec<TypeDeclaration>,
+        value: Vec<Type>,
+    }
+    #[derive(PartialEq)]
+    pub struct TypeDeclaration {
+        name: Variable,
+        value: TypeSignature,
+    }
 }
 
 #[derive(PartialEq)]
@@ -120,8 +129,7 @@ pub enum Expr {
         arg0: Box<Expr>,
     },
 
-    
-    // let 
+    // let
     //     a = val
     //     a
     Let {
@@ -152,7 +160,7 @@ pub enum Expr {
         else_: Box<Expr>,
     },
 
-    // case value of 
+    // case value of
     //     val0 => expr0
     //     val1 => expr1
     Caseof {
@@ -163,30 +171,16 @@ pub enum Expr {
     // do
     //    x <- monad
     //    y = 4
-    //    expr0    
+    //    expr0
     Do {
-        steps: Result<Assignment, Assignment>,
+        steps: Vec<Result<MonadicBinding, Assignment>>,
         expr: Box<Expr>,
     },
 }
 
 
-
-
-pub type Variable = String;
-
 #[derive(PartialEq)]
 pub struct Identifier {
     parent: Variable,
-    children: Box<Result<Variable, Identifier>>,
+    children: Option<Box<Identifier>>,
 }
-
-
-// MODULE
-
-// Asignments
-
-// with pattern matching
-// plain variables
-
-// (n1, n2) = expr
