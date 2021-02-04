@@ -10,14 +10,13 @@ mod settings;
 
 
 
-fn main() {
+// fn main() {
 
 
-    let x = hashmap!{ 
-        "asd" => 2,
-        "lol" => 4
-    };
-    println!("{:?}", x);
-}
-
+//     let x = hashmap!{ 
+//         "asd" => 2,
+//         "lol" => 4
+//     };
+//     println!("{:?}", x);
+// }
 

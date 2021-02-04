@@ -1,5 +1,3 @@
-
-
 mod impl_module_parser;
 mod tests;
 use super::ast;
@@ -7,25 +5,18 @@ use crate::parser::errors::SyntaxError;
 use crate::parser::lexer::tokens::Token;
 use crate::parser::lexer::Lexer;
 
-
 use ast::Identifier;
 
 pub struct ModuleParser<'a> {
     lexer: Lexer<'a>,
-    result: Result<ast::Module, Vec<SyntaxError>>,
+    finished: bool,
 }
 
 impl<'a> ModuleParser<'a> {
     pub fn new(string: &'a str) -> ModuleParser<'a> {
         ModuleParser {
             lexer: Lexer::new(string),
-            result: Ok(ast::Module {
-                imports: vec![],
-                submodules: std::collections::HashMap::new(),
-                types: vec![],
-                data: vec![],
-                assignments: vec![],
-            }),
+            finished: false,
         }
     }
     pub fn new_main(string: &'a str) -> ModuleParser<'a> {
@@ -48,30 +39,30 @@ impl<'a> ModuleParser<'a> {
         }
     }
 
-    fn add_import(&mut self, result: Result<ast::Type, SyntaxError>) {
-        match result {
-            Ok(decl) => match &mut self.result {
-                Ok(module) => module.types.push(decl),
-                _ => {}
-            },
-            Err(error) => match &mut self.result {
-                Ok(_) => self.result = Err(vec![error]),
-                Err(errors) => errors.push(error),
-            },
-        }
-    }
-    fn add_typedeclaration(&mut self, result: Result<ast::Import, SyntaxError>) {
-        match result {
-            Ok(import) => match &mut self.result {
-                Ok(module) => module.imports.push(import),
-                _ => {}
-            },
-            Err(error) => match &mut self.result {
-                Ok(_) => self.result = Err(vec![error]),
-                Err(errors) => errors.push(error),
-            },
-        }
-    }
+    // fn add_import(&mut self, result: Result<ast::Type, SyntaxError>) {
+    //     match result {
+    //         Ok(decl) => match &mut self.result {
+    //             Ok(module) => module.types.push(decl),
+    //             _ => {}
+    //         },
+    //         Err(error) => match &mut self.result {
+    //             Ok(_) => self.result = Err(vec![error]),
+    //             Err(errors) => errors.push(error),
+    //         },
+    //     }
+    // }
+    // fn add_typedeclaration(&mut self, result: Result<ast::Import, SyntaxError>) {
+    //     match result {
+    //         Ok(import) => match &mut self.result {
+    //             Ok(module) => module.imports.push(import),
+    //             _ => {}
+    //         },
+    //         Err(error) => match &mut self.result {
+    //             Ok(_) => self.result = Err(vec![error]),
+    //             Err(errors) => errors.push(error),
+    //         },
+    //     }
+    // }
 }
 
 // fn build_next(&self) -> Result((), SyntaxError) {

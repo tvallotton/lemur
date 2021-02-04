@@ -2,7 +2,7 @@ use super::super::lexer::tokens::*;
 use rug;
 use std::collections::HashMap;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct Module {
     
     pub imports: Vec<Import>,
@@ -22,13 +22,13 @@ pub use types::*;
 mod data {
     use super::*;
 
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub struct Struct {
         name: Variable,
         body: Vec<TypeDeclaration>,
     }
 
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub enum DataDecl {
         Synm {
             name: Type,
@@ -49,7 +49,7 @@ mod data {
 
 mod import {
     use super::*;
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub struct Import {
         name: Identifier,
         pseudonym: Option<Variable>,
@@ -60,25 +60,25 @@ mod import {
 
 mod types {
     use super::*;
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub struct Type {
         generic: bool,
         name: Identifier,
         params: Vec<Type>,
     }
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub struct TypeSignature {
         context: Vec<TypeDeclaration>,
         value: Vec<Type>,
     }
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug)]
     pub struct TypeDeclaration {
         name: Variable,
         value: TypeSignature,
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Pattern {
     Primitive(Primitive),
     Tuple(Vec<Pattern>),
@@ -88,13 +88,13 @@ pub enum Pattern {
     Constructor(Identifier, HashMap<Variable, Pattern>),
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug, )]
 pub struct Assignment {
     name: Option<Identifier>,
     args: Vec<Pattern>,
     value: Box<Expr>,
 }
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Primitive {
     Bool(bool),
     Float(f64),
@@ -106,7 +106,7 @@ pub enum Primitive {
     NamedTuple(HashMap<Variable, Expr>),
     AnonymusTuple(Vec<Expr>),
 }
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 
 // function call
 // let
@@ -179,8 +179,21 @@ pub enum Expr {
 }
 
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct Identifier {
     parent: Variable,
     children: Option<Box<Identifier>>,
+}
+
+
+impl Module {
+    pub fn new() -> Module {
+        Module {
+            assignments: vec![],
+            data: vec![],
+            types: vec![],
+            imports: vec![],
+            submodules: HashMap::new(),
+        }
+    }
 }

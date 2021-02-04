@@ -1,8 +1,8 @@
 pub mod ast;
 
 mod module_parser;
-mod tests;
+// mod tests; 
 
 
 pub use module_parser::*;
-pub use tests::*;
+// pub use tests::*;

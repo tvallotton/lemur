@@ -336,6 +336,7 @@ dependencies = [
  "cargo-watch",
  "maplit",
  "rug",
+ "str-macro",
 ]
 
 [[package]]
@@ -564,6 +565,12 @@ dependencies = [
  "termcolor",
  "thread_local 0.3.4",
 ]
+
+[[package]]
+name = "str-macro"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0914339d16fabe5ae7c5abd3a55d9697801cc224154543f3a7e1396dba3426dd"
 
 [[package]]
 name = "strsim"
